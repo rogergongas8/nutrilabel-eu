@@ -1,7 +1,16 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { FileText, Scale, Wine, PackageCheck, ShieldCheck } from "lucide-react";
+import React, { useState, useMemo, useRef } from "react";
+import {
+  FileText,
+  Scale,
+  Wine,
+  PackageCheck,
+  PlusCircle,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
 import { RecipeBuilder } from "@/components/RecipeBuilder";
 import { NutritionLabel } from "@/components/NutritionLabel";
 import { WineELabelStudio } from "@/components/WineELabelStudio";
@@ -16,11 +25,15 @@ import { calculateRecipeNutrition } from "@/lib/calculator";
 export default function NutriLabelToolFirstPage() {
   const [workMode, setWorkMode] = useState<"food" | "wine">("food");
   const [productName, setProductName] = useState(
-    "Galletas Artesanas de Avena y Miel"
+    "Galletas Artesanas de Avena y Miel (Ejemplo)"
   );
+  const [isExampleMode, setIsExampleMode] = useState(true);
   const [evaporationPercent, setEvaporationPercent] = useState<number>(12);
   const [servingsCount, setServingsCount] = useState<number>(12);
   const [isAuditSheetOpen, setIsAuditSheetOpen] = useState(false);
+
+  const productInputRef = useRef<HTMLInputElement>(null);
+  const labelPreviewRef = useRef<HTMLDivElement>(null);
 
   const [recipeItems, setRecipeItems] = useState<RecipeItem[]>(() => {
     const find = (id: string) => VERIFIED_INGREDIENTS.find((i) => i.id === id)!;
@@ -46,7 +59,20 @@ export default function NutriLabelToolFirstPage() {
     }
   }, [recipeItems, evaporationPercent, servingsCount]);
 
+  // Start a completely blank label from scratch
+  const handleStartNewBlankLabel = () => {
+    setIsExampleMode(false);
+    setProductName("");
+    setRecipeItems([]);
+    setEvaporationPercent(0);
+    setServingsCount(1);
+    setTimeout(() => {
+      productInputRef.current?.focus();
+    }, 50);
+  };
+
   const handleAddItem = (ingredient: Ingredient, amountGrams: number) => {
+    setIsExampleMode(false);
     setRecipeItems((prev) => [
       ...prev,
       { ingredientId: ingredient.id, ingredient, amountGrams },
@@ -54,10 +80,12 @@ export default function NutriLabelToolFirstPage() {
   };
 
   const handleRemoveItem = (index: number) => {
+    setIsExampleMode(false);
     setRecipeItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUpdateAmount = (index: number, newAmount: number) => {
+    setIsExampleMode(false);
     setRecipeItems((prev) =>
       prev.map((item, i) =>
         i === index ? { ...item, amountGrams: newAmount } : item
@@ -68,9 +96,10 @@ export default function NutriLabelToolFirstPage() {
   const handleLoadPreset = (
     preset: "galletas" | "mermelada" | "salsa" | "mealprep"
   ) => {
+    setIsExampleMode(true);
     const find = (id: string) => VERIFIED_INGREDIENTS.find((i) => i.id === id)!;
     if (preset === "galletas") {
-      setProductName("Galletas Artesanas de Avena y Miel");
+      setProductName("Galletas Artesanas de Avena y Miel (Ejemplo)");
       setEvaporationPercent(12);
       setServingsCount(12);
       setRecipeItems([
@@ -82,7 +111,7 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "nueces-peladas", ingredient: find("nueces-peladas"), amountGrams: 40 },
       ]);
     } else if (preset === "mermelada") {
-      setProductName("Mermelada Extra de Fresa de Temporada");
+      setProductName("Mermelada Extra de Fresa (Ejemplo)");
       setEvaporationPercent(22);
       setServingsCount(10);
       setRecipeItems([
@@ -91,7 +120,7 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "agua-potable", ingredient: find("agua-potable"), amountGrams: 40 },
       ]);
     } else if (preset === "salsa") {
-      setProductName("Salsa Napolitana Artesana con AOVE");
+      setProductName("Salsa Napolitana con AOVE (Ejemplo)");
       setEvaporationPercent(15);
       setServingsCount(6);
       setRecipeItems([
@@ -102,7 +131,7 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "sal-comun", ingredient: find("sal-comun"), amountGrams: 8 },
       ]);
     } else if (preset === "mealprep") {
-      setProductName("Tupper Fitness: Pollo con Garbanzos y AOVE");
+      setProductName("Tupper Fitness: Pollo con Garbanzos (Ejemplo)");
       setEvaporationPercent(8);
       setServingsCount(1);
       setRecipeItems([
@@ -115,9 +144,13 @@ export default function NutriLabelToolFirstPage() {
     }
   };
 
+  const scrollToLabel = () => {
+    labelPreviewRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-paper text-ink">
-      {/* Compact Tool-First Top Bar */}
+      {/* Top Navigation Bar */}
       <header className="sticky top-0 z-40 bg-[#F6F3EC]/95 backdrop-blur border-b-2 border-primary py-3 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -129,15 +162,15 @@ export default function NutriLabelToolFirstPage() {
                 <span className="font-display text-xl font-extrabold text-primary">
                   NutriLabel
                 </span>
-                <Badge variant="mono">ART. 31.4 UE 1169/2011</Badge>
+                <Badge variant="mono">NORMATIVA UE 1169/2011</Badge>
               </div>
               <p className="font-mono text-[10px] text-neutral uppercase">
-                Estación de Cálculo Nutricional · Fuentes Oficiales BEDCA / USDA
+                Generador Oficial de Etiquetas Nutricionales · BEDCA / USDA
               </p>
             </div>
           </div>
 
-          {/* 2-Mode Workstation Switcher */}
+          {/* 2-Mode Switcher */}
           <div className="flex border-2 border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
             <button
               type="button"
@@ -149,7 +182,7 @@ export default function NutriLabelToolFirstPage() {
               }`}
             >
               <PackageCheck className="w-3.5 h-3.5" />
-              <span>1. Alimento Envasado (UE 1169)</span>
+              <span>Etiqueta de Alimentos</span>
             </button>
             <button
               type="button"
@@ -161,69 +194,132 @@ export default function NutriLabelToolFirstPage() {
               }`}
             >
               <Wine className="w-3.5 h-3.5" />
-              <span>2. Vino / Bebida QR (UE 2021/2117)</span>
+              <span>Etiqueta QR de Vinos</span>
             </button>
           </div>
-
-          {/* Direct Audit Dossier Action */}
-          {workMode === "food" && recipeItems.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAuditSheetOpen(true)}
-            >
-              <FileText className="w-3.5 h-3.5 text-accent" />
-              <span>Expediente Sanidad (APPCC)</span>
-            </Button>
-          )}
         </div>
       </header>
 
-      {/* Direct Tool-First Workspace (Zero Marketing Fluff) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {workMode === "food" ? (
           <>
-            {/* Compact Product Title & Telemetry Bar */}
-            <div className="bg-surface border-2 border-primary p-4 mb-6 shadow-tactile-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex-1">
-                <label
-                  htmlFor="product-title-input"
-                  className="block font-mono text-[10px] font-bold uppercase tracking-widest text-accent mb-0.5"
-                >
-                  Denominación del Alimento Envasado (Art. 17 Reglamento UE 1169/2011):
-                </label>
-                <input
-                  id="product-title-input"
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  className="w-full font-display text-lg sm:text-xl font-bold text-primary bg-transparent border-b border-primary/30 focus:border-accent focus:outline-none pb-0.5"
-                />
-              </div>
+            {/* HERO EXPLANATION + "CREAR ETIQUETA DESDE CERO" CTA */}
+            <div className="bg-primary text-[#F6F3EC] border-2 border-primary p-5 sm:p-6 mb-6 shadow-tactile">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="space-y-2 max-w-2xl">
+                  <span className="inline-block font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 bg-accent text-white font-bold">
+                    ¿CÓMO FUNCIONA? · EN 3 PASOS SIMPLES
+                  </span>
+                  <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight">
+                    Crea tu Etiqueta Nutricional Oficial lista para imprimir
+                  </h1>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-[#F6F3EC]/90 font-sans">
+                    <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
+                      <span className="font-mono font-black text-accent">1.</span>
+                      <span>
+                        <strong>Pon el nombre</strong> de tu producto o pulsa{" "}
+                        <em>&ldquo;Empezar Etiqueta desde Cero&rdquo;</em>.
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
+                      <span className="font-mono font-black text-accent">2.</span>
+                      <span>
+                        <strong>Añade tus ingredientes</strong> y los gramos que usas en tu receta.
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
+                      <span className="font-mono font-black text-accent">3.</span>
+                      <span>
+                        <strong>Descarga la etiqueta</strong> (PNG o SVG) lista para pegar en tu envase.
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs shrink-0">
-                <div className="px-3 py-1.5 bg-white border border-primary/30">
-                  <span className="text-neutral block text-[9px]">PESO TERMINADO</span>
-                  <strong className="text-primary">
-                    {calculation ? `${calculation.finishedWeightGrams.toFixed(0)} g` : "0 g"}
-                  </strong>
-                </div>
-                <div className="px-3 py-1.5 bg-white border border-primary/30">
-                  <span className="text-neutral block text-[9px]">ENERGÍA / 100G</span>
-                  <strong className="text-primary">
-                    {calculation ? `${calculation.per100g.energyKcal} kcal` : "0 kcal"}
-                  </strong>
-                </div>
-                <div className="px-3 py-1.5 bg-primary text-[#F6F3EC]">
-                  <span className="text-[#F6F3EC]/70 block text-[9px]">ALÉRGENOS UE</span>
-                  <strong className="text-accent">
-                    {calculation ? `${calculation.allergens.length} detectados` : "0"}
-                  </strong>
+                {/* Primary Action Button: Clear Example & Start Fresh */}
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleStartNewBlankLabel}
+                    className="h-12 px-5 bg-accent hover:bg-[#b83d1b] text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-white shadow-lg transition-all cursor-pointer"
+                  >
+                    <PlusCircle className="w-5 h-5" />
+                    <span>Crear Mi Propia Etiqueta (Desde Cero)</span>
+                  </button>
+
+                  {isExampleMode ? (
+                    <span className="font-mono text-[11px] text-[#F6F3EC]/80 text-center">
+                      👆 Ahora estás viendo una receta de ejemplo. Pulsa arriba para vaciarla.
+                    </span>
+                  ) : (
+                    <span className="font-mono text-[11px] text-emerald-300 text-center flex items-center justify-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Modo creación activo: rellena tus ingredientes abajo
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* 12-Col Workstation */}
+            {/* PASO 1: Nombre del Producto */}
+            <div className="bg-surface border-2 border-primary p-5 mb-6 shadow-tactile-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="px-2 py-0.5 bg-primary text-[#F6F3EC] font-mono text-[10px] font-bold uppercase">
+                      PASO 1 DE 3
+                    </span>
+                    <label
+                      htmlFor="product-title-input"
+                      className="font-mono text-xs font-bold uppercase text-primary"
+                    >
+                      ¿Cómo se llama tu producto?
+                    </label>
+                  </div>
+                  <input
+                    ref={productInputRef}
+                    id="product-title-input"
+                    type="text"
+                    placeholder="Escribe aquí el nombre de tu producto (ej. Bizcocho Casero de Yogur, Salsa Brava...)"
+                    value={productName}
+                    onChange={(e) => {
+                      setIsExampleMode(false);
+                      setProductName(e.target.value);
+                    }}
+                    className="w-full h-11 px-3.5 font-display text-lg font-bold text-primary bg-white border-2 border-primary focus:border-accent focus:outline-none"
+                  />
+                </div>
+
+                {/* Preset Selector */}
+                <div className="shrink-0">
+                  <span className="font-mono text-[10px] font-bold uppercase text-neutral block mb-1.5 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-accent" />
+                    ¿O prefieres cargar una plantilla rápida?
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(
+                      [
+                        { id: "galletas", label: "🍪 Galletas" },
+                        { id: "mermelada", label: "🍓 Mermelada" },
+                        { id: "salsa", label: "🍅 Salsa" },
+                        { id: "mealprep", label: "🍗 Tupper Pollo" },
+                      ] as const
+                    ).map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleLoadPreset(p.id)}
+                        className="px-2.5 py-1.5 text-xs font-mono font-semibold border border-primary/40 bg-white hover:bg-primary hover:text-[#F6F3EC] transition-colors cursor-pointer"
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 12-Col Workstation: PASO 2 (Izquierda) + PASO 3 (Derecha) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-7">
                 <RecipeBuilder
@@ -235,15 +331,35 @@ export default function NutriLabelToolFirstPage() {
                   onUpdateEvaporation={setEvaporationPercent}
                   servingsCount={servingsCount}
                   onUpdateServings={setServingsCount}
-                  onLoadPreset={handleLoadPreset}
+                  onStartBlank={handleStartNewBlankLabel}
+                  onScrollToLabel={scrollToLabel}
                 />
               </div>
 
-              <div className="lg:col-span-5 lg:sticky lg:top-20">
+              <div
+                ref={labelPreviewRef}
+                className="lg:col-span-5 lg:sticky lg:top-20"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="px-2.5 py-1 bg-accent text-white font-mono text-xs font-bold uppercase">
+                    PASO 3 DE 3 · TU ETIQUETA GENERADA EN VIVO
+                  </span>
+                  {recipeItems.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAuditSheetOpen(true)}
+                      className="font-mono text-xs font-bold text-primary underline hover:text-accent flex items-center gap-1 cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-accent" />
+                      <span>Informe Sanidad</span>
+                    </button>
+                  )}
+                </div>
+
                 <NutritionLabel
                   calculation={calculation}
                   onOpenAuditSheet={() => setIsAuditSheetOpen(true)}
-                  productName={productName}
+                  productName={productName || "Mi Producto"}
                 />
               </div>
             </div>
@@ -253,15 +369,13 @@ export default function NutriLabelToolFirstPage() {
         )}
       </main>
 
-      {/* Legal Disclaimer & Official Normative Footer */}
       <Footer />
 
-      {/* Printable Sanitary Inspection Dossier Modal (APPCC) */}
       <TechnicalSheetModal
         isOpen={isAuditSheetOpen}
         onClose={() => setIsAuditSheetOpen(false)}
         calculation={calculation}
-        productName={productName}
+        productName={productName || "Mi Producto"}
       />
     </div>
   );
