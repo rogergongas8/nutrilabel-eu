@@ -10,8 +10,49 @@ export const Footer: React.FC = () => {
   const [activeDoc, setActiveDoc] = useState<LegalDocKey>(null);
 
   return (
-    <footer className="bg-[#111613] text-[#F6F3EC] pt-16 pb-12 border-t-2 border-primary">
+    <footer className="bg-[#111613] text-[#F6F3EC] pt-12 pb-12 border-t-2 border-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Clean Collapsible SEO & GEO Regulatory Knowledge Base */}
+        <section id="preguntas-normativas" className="mb-12 pb-10 border-b border-[#F6F3EC]/15">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-accent font-bold block mb-1">
+            GUÍA RÁPIDA DE CUMPLIMIENTO LEGAL (UE 1169/2011 Y VINOS 2021/2117)
+          </span>
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-[#F6F3EC] mb-4">
+            Preguntas Frecuentes sobre Etiquetado Nutricional e Inspección de Sanidad
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <details className="bg-[#19211D] border border-[#F6F3EC]/15 p-4 group">
+              <summary className="font-bold text-[#F6F3EC] cursor-pointer list-none flex items-center justify-between gap-2">
+                <span>¿Es 100% legal calcular la etiqueta sin ir al laboratorio?</span>
+                <span className="text-accent font-mono">+</span>
+              </summary>
+              <p className="mt-2.5 text-[#F6F3EC]/75 leading-relaxed">
+                Sí. El <strong>Artículo 31.4 del Reglamento (UE) Nº 1169/2011</strong> autoriza expresamente calcular los valores nutricionales a partir de bases de datos oficiales reconocidas (como <strong>BEDCA</strong> en España y <strong>USDA</strong>) sin obligación de realizar análisis químicos de laboratorio para alimentos homogéneos.
+              </p>
+            </details>
+
+            <details className="bg-[#19211D] border border-[#F6F3EC]/15 p-4 group">
+              <summary className="font-bold text-[#F6F3EC] cursor-pointer list-none flex items-center justify-between gap-2">
+                <span>¿Por qué es obligatorio aplicar la merma de cocción?</span>
+                <span className="text-accent font-mono">+</span>
+              </summary>
+              <p className="mt-2.5 text-[#F6F3EC]/75 leading-relaxed">
+                Al hornear galletas, pan o cocer una mermelada se evapora agua. Como la etiqueta nutricional declara los valores por cada <strong>100 g de producto terminado</strong>, descontar la pérdida de humedad evita desviaciones frente a la Guía de Tolerancias (±20%) de Sanidad.
+              </p>
+            </details>
+
+            <details className="bg-[#19211D] border border-[#F6F3EC]/15 p-4 group">
+              <summary className="font-bold text-[#F6F3EC] cursor-pointer list-none flex items-center justify-between gap-2">
+                <span>¿Qué exige la ley de etiquetas QR de Vinos (UE 2021/2117)?</span>
+                <span className="text-accent font-mono">+</span>
+              </summary>
+              <p className="mt-2.5 text-[#F6F3EC]/75 leading-relaxed">
+                Obliga a imprimir en la botella el valor energético (<code>E = kJ/kcal por 100 ml</code>) y los alérgenos (sulfitos), permitiendo mostrar la tabla nutricional completa e ingredientes mediante un código QR cuya web no rastree al usuario con cookies ni publicidad.
+              </p>
+            </details>
+          </div>
+        </section>
+
         {/* Multi-Column Editorial Footer */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12">
           {/* Column 1 (4 Cols): Brand Identity & Mission */}
