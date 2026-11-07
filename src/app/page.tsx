@@ -1,14 +1,8 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import {
-  FileText,
-  Scale,
-  Wine,
-  PackageCheck,
-  Plus,
-  Sparkles,
-} from "lucide-react";
+import { FileText, Wine, PackageCheck, Plus } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { RecipeBuilder } from "@/components/RecipeBuilder";
 import { NutritionLabel } from "@/components/NutritionLabel";
 import { WineELabelStudio } from "@/components/WineELabelStudio";
@@ -148,39 +142,31 @@ export default function NutriLabelToolFirstPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7F4] text-stone-800">
-      {/* Soft, Airy Top Bar */}
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-stone-200/80 py-3.5 px-4 sm:px-8">
+    <div className="min-h-screen flex flex-col bg-[#F4EFE6] text-[#231F1D]">
+      {/* Warm Apothecary Header */}
+      <header className="sticky top-0 z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E2D9C8] py-3.5 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-900 text-white flex items-center justify-center shadow-sm">
-              <Scale className="w-4 h-4 text-emerald-300" />
-            </div>
-            <div>
-              <span className="text-lg font-bold tracking-tight text-stone-900">
-                NutriLabel
-              </span>
-              <span className="hidden sm:inline-block ml-2.5 text-xs text-stone-500 font-medium">
-                {isEn
-                  ? "Official EU & FDA Nutrition Label Generator"
-                  : "Generador de Etiquetas Nutricionales Oficiales"}
-              </span>
-            </div>
-          </div>
+          <BrandLogo
+            subtitle={
+              isEn
+                ? "Official EU 1169/2011 & FDA Nutrition Label Maker"
+                : "Estudio de Etiquetado Nutricional · Reglamento UE 1169/2011"
+            }
+          />
 
           <div className="flex items-center gap-3">
-            {/* Soft Pill Switcher */}
-            <div className="flex rounded-xl bg-stone-100 p-1 text-xs font-semibold">
+            {/* Warm Linen Pill Switcher */}
+            <div className="flex rounded-xl bg-[#EBE4D8] p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setWorkMode("food")}
                 className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   workMode === "food"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-600 hover:text-stone-900"
+                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
+                    : "text-[#6E655F] hover:text-[#231F1D]"
                 }`}
               >
-                <PackageCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <PackageCheck className="w-3.5 h-3.5 text-[#C84B31]" />
                 <span>{isEn ? "Food Label" : "Alimentos"}</span>
               </button>
               <button
@@ -188,24 +174,24 @@ export default function NutriLabelToolFirstPage() {
                 onClick={() => setWorkMode("wine")}
                 className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   workMode === "wine"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-600 hover:text-stone-900"
+                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
+                    : "text-[#6E655F] hover:text-[#231F1D]"
                 }`}
               >
-                <Wine className="w-3.5 h-3.5 text-amber-700" />
-                <span>{isEn ? "Wine QR" : "Vinos QR"}</span>
+                <Wine className="w-3.5 h-3.5 text-[#6B2D38]" />
+                <span>{isEn ? "Wine QR" : "Bodegas / Vinos"}</span>
               </button>
             </div>
 
             {/* Language Switcher ES | EN */}
-            <div className="flex rounded-xl bg-stone-100 p-1 text-xs font-semibold">
+            <div className="flex rounded-xl bg-[#EBE4D8] p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setLang("es")}
                 className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
                   lang === "es"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-900"
+                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
+                    : "text-[#6E655F] hover:text-[#231F1D]"
                 }`}
               >
                 ES
@@ -215,8 +201,8 @@ export default function NutriLabelToolFirstPage() {
                 onClick={() => setLang("en")}
                 className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
                   lang === "en"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-900"
+                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
+                    : "text-[#6E655F] hover:text-[#231F1D]"
                 }`}
               >
                 EN
@@ -229,18 +215,18 @@ export default function NutriLabelToolFirstPage() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8">
         {workMode === "food" ? (
           <>
-            {/* Calm, Breathable Intro Header */}
+            {/* Editorial Gastronomy Intro */}
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+                <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-[#231F1D] tracking-tight">
                   {isEn
-                    ? "Create your nutrition label in 3 simple steps"
-                    : "Crea tu etiqueta nutricional de forma sencilla"}
+                    ? "Craft your official nutrition label"
+                    : "Elabora tu etiqueta nutricional oficial"}
                 </h1>
-                <p className="text-sm text-stone-500 mt-1">
+                <p className="text-sm text-[#6E655F] mt-1">
                   {isEn
-                    ? "1. Name your product · 2. Add your ingredients in grams · 3. Download your print-ready PNG or SVG."
-                    : "1. Escribe el nombre · 2. Añade los ingredientes y sus gramos · 3. Descarga tu etiqueta lista para imprimir."}
+                    ? "1. Name your recipe · 2. Weigh your ingredients in grams · 3. Export your print-ready label."
+                    : "1. Nombra tu receta · 2. Añade los ingredientes en gramos · 3. Descarga tu etiqueta lista para imprenta."}
                 </p>
               </div>
 
@@ -248,13 +234,11 @@ export default function NutriLabelToolFirstPage() {
                 <button
                   type="button"
                   onClick={handleStartNewBlankLabel}
-                  className="px-4 py-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-[#C84B31] hover:bg-[#AD3B23] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>
-                    {isEn
-                      ? "New Blank Label"
-                      : "Empezar Etiqueta en Blanco"}
+                    {isEn ? "New Blank Recipe" : "Empezar Receta en Blanco"}
                   </span>
                 </button>
               </div>
@@ -264,19 +248,18 @@ export default function NutriLabelToolFirstPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left 7 Columns: Single Cohesive Recipe Card */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6">
+                <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-6">
                   {/* Product Name Input + Quick Examples */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                     <label
                       htmlFor="product-title-input"
-                      className="text-xs font-semibold text-stone-500"
+                      className="text-xs font-semibold text-[#5C534C]"
                     >
-                      {isEn ? "1. Product Name" : "1. Nombre de tu producto"}
+                      {isEn ? "1. Product Name" : "1. Nombre del producto"}
                     </label>
                     <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-stone-400 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-amber-600" />
-                        {isEn ? "Examples:" : "Ejemplos:"}
+                      <span className="text-[#8C827A]">
+                        {isEn ? "Try recipe:" : "Probar receta:"}
                       </span>
                       {(
                         [
@@ -290,7 +273,7 @@ export default function NutriLabelToolFirstPage() {
                           key={p.id}
                           type="button"
                           onClick={() => handleLoadPreset(p.id)}
-                          className="px-2 py-0.5 rounded-md bg-stone-100 hover:bg-stone-200 text-stone-600 font-medium transition-colors cursor-pointer"
+                          className="px-2.5 py-0.5 rounded-md bg-[#EBE4D8] hover:bg-[#DFD6C7] text-[#3D3733] font-medium transition-colors cursor-pointer"
                         >
                           {p.label}
                         </button>
@@ -309,7 +292,7 @@ export default function NutriLabelToolFirstPage() {
                     }
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
-                    className="w-full h-11 px-4 rounded-xl bg-stone-50/70 border border-stone-200 focus:bg-white focus:border-emerald-700 focus:outline-none text-base font-semibold text-stone-900 transition-all"
+                    className="w-full h-11 px-4 rounded-xl bg-white border border-[#DCD2C0] focus:border-[#C84B31] focus:outline-none text-base font-semibold text-[#231F1D] transition-all"
                   />
                 </div>
 
@@ -333,20 +316,20 @@ export default function NutriLabelToolFirstPage() {
                 className="lg:col-span-5 lg:sticky lg:top-24"
               >
                 <div className="mb-2.5 flex items-center justify-between px-1">
-                  <span className="text-xs font-semibold text-stone-500">
+                  <span className="text-xs font-semibold text-[#5C534C]">
                     {isEn
                       ? "3. Live Nutrition Label Preview"
-                      : "3. Vista previa de tu etiqueta en vivo"}
+                      : "3. Vista previa de la etiqueta"}
                   </span>
                   {recipeItems.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setIsAuditSheetOpen(true)}
-                      className="text-xs font-semibold text-emerald-800 hover:text-emerald-600 flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-semibold text-[#4A5D4E] hover:text-[#231F1D] flex items-center gap-1 cursor-pointer underline underline-offset-2"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       <span>
-                        {isEn ? "Sanitary Report" : "Informe para Sanidad"}
+                        {isEn ? "Sanitary Report" : "Ficha para Sanidad"}
                       </span>
                     </button>
                   )}

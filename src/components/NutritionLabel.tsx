@@ -25,14 +25,14 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
 
   if (!calculation) {
     return (
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-10 text-center">
-        <div className="w-11 h-11 rounded-xl bg-stone-100 text-stone-500 flex items-center justify-center mx-auto mb-3">
+      <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-10 text-center">
+        <div className="w-11 h-11 rounded-xl bg-[#EBE4D8] text-[#5C534C] flex items-center justify-center mx-auto mb-3">
           <FileCheck className="w-5 h-5" />
         </div>
-        <h3 className="text-base font-bold text-stone-800">
+        <h3 className="text-base font-bold text-[#231F1D]">
           {lang === "en" ? "Your label will appear here" : "Tu etiqueta aparecerá aquí"}
         </h3>
-        <p className="text-xs text-stone-500 mt-1 max-w-xs mx-auto">
+        <p className="text-xs text-[#6E655F] mt-1 max-w-xs mx-auto">
           {lang === "en"
             ? "Add at least one ingredient on the left to generate your nutrition label."
             : "Añade al menos un ingrediente a la izquierda para generar la tabla nutricional."}
@@ -78,15 +78,15 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="440" height="310" viewBox="0 0 440 310">
   <style>
-    .title { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #111613; }
-    .header { font-family: Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #111613; }
-    .row { font-family: Helvetica, Arial, sans-serif; font-size: 11px; fill: #111613; }
+    .title { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #231F1D; }
+    .header { font-family: Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #231F1D; }
+    .row { font-family: Helvetica, Arial, sans-serif; font-size: 11px; fill: #231F1D; }
     .bold { font-weight: bold; }
-    .sub { font-family: Helvetica, Arial, sans-serif; fill: #4A524E; font-size: 9.5px; }
-    .line { stroke: #111613; stroke-width: 1; }
-    .thick-line { stroke: #111613; stroke-width: 2.5; }
+    .sub { font-family: Helvetica, Arial, sans-serif; fill: #6E655F; font-size: 9.5px; }
+    .line { stroke: #231F1D; stroke-width: 1; }
+    .thick-line { stroke: #231F1D; stroke-width: 2.5; }
   </style>
-  <rect width="440" height="310" fill="#ffffff" stroke="#111613" stroke-width="2.5"/>
+  <rect width="440" height="310" fill="#ffffff" stroke="#231F1D" stroke-width="2.5"/>
   <text x="18" y="30" class="title">${title}</text>
   <line x1="18" y1="38" x2="422" y2="38" class="thick-line"/>
   <text x="18" y="54" class="header">${col1}</text>
@@ -195,21 +195,21 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     : calculation.ingredientsListFormatted;
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-5">
-      {/* Soft Format Switcher */}
+    <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-6 space-y-5">
+      {/* Warm Format Switcher */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-stone-500">
+        <span className="text-xs font-medium text-[#6E655F]">
           {lang === "en" ? "Format" : "Formato normativo"}
         </span>
 
-        <div className="flex rounded-lg bg-stone-100 p-0.5 text-xs font-semibold">
+        <div className="flex rounded-lg bg-[#EBE4D8] p-0.5 text-xs font-semibold">
           <button
             type="button"
             onClick={() => setStandard("EU")}
             className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
               standard === "EU"
-                ? "bg-white text-stone-900 shadow-xs"
-                : "text-stone-500 hover:text-stone-900"
+                ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
+                : "text-[#6E655F] hover:text-[#231F1D]"
             }`}
           >
             {lang === "en" ? "Europe / UK" : "Europa (UE)"}
@@ -219,8 +219,8 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
             onClick={() => setStandard("FDA")}
             className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
               standard === "FDA"
-                ? "bg-white text-stone-900 shadow-xs"
-                : "text-stone-500 hover:text-stone-900"
+                ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
+                : "text-[#6E655F] hover:text-[#231F1D]"
             }`}
           >
             USA (FDA)
@@ -228,22 +228,22 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         </div>
       </div>
 
-      {/* Clean Label Box */}
+      {/* Print Label Paper Box */}
       <div
         ref={labelRef}
-        className="bg-white rounded-xl border border-stone-300 p-5"
+        className="bg-white rounded-xl border border-[#CFC5B4] p-5 shadow-2xs"
       >
-        <div className="border-b-2 border-stone-900 pb-2.5 mb-2">
-          <h3 className="text-base font-extrabold tracking-tight text-stone-900 uppercase">
+        <div className="border-b-2 border-[#231F1D] pb-2.5 mb-2">
+          <h3 className="text-base font-extrabold tracking-tight text-[#231F1D] uppercase">
             {standard === "FDA"
               ? "Nutrition Facts"
               : isEn
               ? "Nutrition Declaration"
               : "Información Nutricional"}
           </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
+          <p className="text-xs text-[#6E655F] mt-0.5">
             {isEn ? "Serving size:" : "Tamaño de ración:"}{" "}
-            <strong className="font-semibold text-stone-800">
+            <strong className="font-semibold text-[#231F1D]">
               {servingSizeGrams} g
             </strong>{" "}
             ({calculation.servingsCount}{" "}
@@ -253,9 +253,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
 
         {/* Nutrient Table */}
         <div className="overflow-x-auto">
-          <table className="nutrition-table-official text-stone-900">
+          <table className="nutrition-table-official text-[#231F1D]">
             <thead>
-              <tr className="text-left text-xs font-bold text-stone-700">
+              <tr className="text-left text-xs font-bold text-[#3D3733]">
                 <th className="py-2 px-1">
                   {isEn ? "Typical values" : "Valores medios"}
                 </th>
@@ -281,7 +281,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 <td className="py-2 px-1 text-right">
                   {perServing.energyKcal} kcal
                 </td>
-                <td className="py-2 px-1 text-right text-stone-500">
+                <td className="py-2 px-1 text-right text-[#6E655F]">
                   {referenceIntakePercent.energy}%
                 </td>
               </tr>
@@ -294,11 +294,11 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.fat, "macro")}
                 </td>
-                <td className="py-2 px-1 text-right text-stone-500">
+                <td className="py-2 px-1 text-right text-[#6E655F]">
                   {referenceIntakePercent.fat}%
                 </td>
               </tr>
-              <tr className="text-stone-500">
+              <tr className="text-[#6E655F]">
                 <td className="py-1.5 px-1 pl-4">
                   {isEn ? "of which saturates" : "de las cuales saturadas"}
                 </td>
@@ -323,11 +323,11 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.carbs, "macro")}
                 </td>
-                <td className="py-2 px-1 text-right text-stone-500">
+                <td className="py-2 px-1 text-right text-[#6E655F]">
                   {referenceIntakePercent.carbs}%
                 </td>
               </tr>
-              <tr className="text-stone-500">
+              <tr className="text-[#6E655F]">
                 <td className="py-1.5 px-1 pl-4">
                   {isEn ? "of which sugars" : "de los cuales azúcares"}
                 </td>
@@ -350,7 +350,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.protein, "macro")}
                 </td>
-                <td className="py-2 px-1 text-right text-stone-500">
+                <td className="py-2 px-1 text-right text-[#6E655F]">
                   {referenceIntakePercent.protein}%
                 </td>
               </tr>
@@ -363,7 +363,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.salt, "salt")}
                 </td>
-                <td className="py-2 px-1 text-right text-stone-500">
+                <td className="py-2 px-1 text-right text-[#6E655F]">
                   {referenceIntakePercent.salt}%
                 </td>
               </tr>
@@ -371,21 +371,21 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           </table>
         </div>
 
-        <p className="mt-2.5 text-[11px] text-stone-400 leading-snug">
+        <p className="mt-2.5 text-[11px] text-[#8C827A] leading-snug">
           {isEn
             ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal)."
             : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)."}
         </p>
 
         {/* Ingredients & Allergens */}
-        <div className="mt-4 pt-3.5 border-t border-stone-200">
-          <p className="text-xs font-bold text-stone-800">
+        <div className="mt-4 pt-3.5 border-t border-[#E5DEC9]">
+          <p className="text-xs font-bold text-[#231F1D]">
             {isEn ? "Ingredients:" : "Ingredientes:"}
           </p>
-          <p className="mt-1 text-xs text-stone-600 leading-relaxed">
+          <p className="mt-1 text-xs text-[#5C534C] leading-relaxed">
             {displayedIngredientList.split("**").map((chunk, i) =>
               i % 2 === 1 ? (
-                <strong key={i} className="font-bold text-stone-900 underline">
+                <strong key={i} className="font-bold text-[#231F1D] underline">
                   {chunk}
                 </strong>
               ) : (
@@ -395,7 +395,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           </p>
 
           {allergens.length > 0 && (
-            <div className="mt-3 p-2.5 rounded-lg bg-amber-50/70 border border-amber-200/70 text-xs text-amber-950">
+            <div className="mt-3 p-2.5 rounded-lg bg-[#FDF1EE] border border-[#F3D0C7] text-xs text-[#7D2714]">
               <span className="font-semibold">
                 {isEn ? "Allergens: " : "Alérgenos: "}
               </span>
@@ -405,15 +405,15 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         </div>
       </div>
 
-      {/* Soft Action Buttons */}
+      {/* Action Buttons in Warm Terracotta & Linen */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <button
           type="button"
           onClick={handleDownloadPNG}
           disabled={isExporting}
-          className="h-11 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+          className="h-11 px-4 rounded-xl bg-[#C84B31] hover:bg-[#AD3B23] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
         >
-          <ImageIcon className="w-4 h-4 text-emerald-300" />
+          <ImageIcon className="w-4 h-4 text-[#FADCD5]" />
           <span>{lang === "en" ? "Download PNG" : "Descargar PNG"}</span>
         </button>
 
@@ -421,9 +421,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           type="button"
           onClick={handleDownloadSVG}
           disabled={isExporting}
-          className="h-11 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-800 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="h-11 px-4 rounded-xl bg-[#EBE4D8] hover:bg-[#DFD6C7] text-[#231F1D] text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
-          <Download className="w-4 h-4 text-stone-600" />
+          <Download className="w-4 h-4 text-[#5C534C]" />
           <span>{lang === "en" ? "Download SVG" : "Descargar SVG"}</span>
         </button>
       </div>

@@ -46,24 +46,24 @@ export const WineELabelStudio: React.FC = () => {
         if (qrMatrix.modules[r][c]) {
           const x = offsetX + (c + quietZone) * moduleSize;
           const y = offsetY + (r + quietZone) * moduleSize;
-          rects += `<rect x="${x}" y="${y}" width="${moduleSize}" height="${moduleSize}" fill="#111613"/>`;
+          rects += `<rect x="${x}" y="${y}" width="${moduleSize}" height="${moduleSize}" fill="#231F1D"/>`;
         }
       }
     }
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
-  <rect width="${svgWidth}" height="${svgHeight}" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" rx="12"/>
-  <text x="${svgWidth / 2}" y="20" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="bold" fill="#111613">INGREDIENTES E INFORMACIÓN NUTRICIONAL</text>
+  <rect width="${svgWidth}" height="${svgHeight}" fill="#FFFFFF" stroke="#DCD2C0" stroke-width="2" rx="12"/>
+  <text x="${svgWidth / 2}" y="20" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="bold" fill="#231F1D">INGREDIENTES E INFORMACIÓN NUTRICIONAL</text>
   ${rects}
-  <rect x="24" y="${offsetY + qrPixelSize + 10}" width="${svgWidth - 48}" height="32" rx="6" fill="#F8F7F4" stroke="#CBD5E1" stroke-width="1"/>
-  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 31}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#111613">${result.bottleSymbolText}</text>
-  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 60}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="bold" fill="#111613">${
+  <rect x="24" y="${offsetY + qrPixelSize + 10}" width="${svgWidth - 48}" height="32" rx="6" fill="#FAF7F2" stroke="#DCD2C0" stroke-width="1"/>
+  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 31}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#231F1D">${result.bottleSymbolText}</text>
+  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 60}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="bold" fill="#231F1D">${
       result.allergensEs.length > 0
         ? `Contiene: ${result.allergensEs.join(", ")}`
         : "Sin alérgenos declarables"
     }</text>
-  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 76}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#64748B">Reglamento (UE) 2021/2117 · E-Label Sin Cookies</text>
+  <text x="${svgWidth / 2}" y="${offsetY + qrPixelSize + 76}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#6E655F">Reglamento (UE) 2021/2117 · E-Label Sin Cookies</text>
 </svg>`;
 
     const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
@@ -81,38 +81,38 @@ export const WineELabelStudio: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      {/* Left 7 Cols: Soft Oenological Card */}
+      {/* Left 7 Cols: Warm Oenological Card */}
       <div className="lg:col-span-7">
-        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 sm:p-7 space-y-6">
-          <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+        <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-6 sm:p-7 space-y-6">
+          <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-4">
             <div>
-              <h2 className="text-xl font-bold text-stone-900">
-                Etiqueta QR para Vinos y Bebidas (UE 2021/2117)
+              <h2 className="font-serif text-xl font-semibold text-[#231F1D]">
+                Etiqueta QR para Vinos y Bodegas (UE 2021/2117)
               </h2>
-              <p className="text-xs text-stone-500 mt-0.5">
+              <p className="text-xs text-[#6E655F] mt-0.5">
                 Calcula la energía por 100 ml y genera el código QR sin cookies obligatorio.
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#F9F0F2] text-[#6B2D38] flex items-center justify-center border border-[#E8D2D7]">
               <Wine className="w-5 h-5" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-stone-600 mb-1.5">
+              <label className="block text-xs font-semibold text-[#5C534C] mb-1.5">
                 Nombre del Vino o Bebida
               </label>
               <input
                 type="text"
                 value={wine.wineName}
                 onChange={(e) => setWine({ ...wine, wineName: e.target.value })}
-                className="w-full h-11 px-3.5 rounded-xl bg-stone-50/70 border border-stone-200 focus:bg-white focus:border-emerald-700 text-sm font-semibold text-stone-900 focus:outline-none"
+                className="w-full h-11 px-3.5 rounded-xl bg-white border border-[#DCD2C0] focus:border-[#6B2D38] text-sm font-semibold text-[#231F1D] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1.5">
+              <label className="block text-xs font-semibold text-[#5C534C] mb-1.5">
                 Añada / Cosecha
               </label>
               <input
@@ -121,14 +121,14 @@ export const WineELabelStudio: React.FC = () => {
                 onChange={(e) =>
                   setWine({ ...wine, vintageYear: e.target.value })
                 }
-                className="w-full h-11 px-3.5 rounded-xl bg-stone-50/70 border border-stone-200 focus:bg-white focus:border-emerald-700 text-sm font-semibold text-stone-900 focus:outline-none"
+                className="w-full h-11 px-3.5 rounded-xl bg-white border border-[#DCD2C0] focus:border-[#6B2D38] text-sm font-semibold text-[#231F1D] focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/70">
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
+            <div className="p-4 rounded-xl bg-white border border-[#DCD2C0]">
+              <label className="block text-xs font-semibold text-[#3D3733] mb-1">
                 Grado Alcohólico (% vol)
               </label>
               <input
@@ -143,15 +143,15 @@ export const WineELabelStudio: React.FC = () => {
                     abvPercent: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="w-full h-10 px-3 rounded-lg bg-white border border-stone-200 text-sm font-bold text-stone-900 focus:border-emerald-700 focus:outline-none"
+                className="w-full h-10 px-3 rounded-lg bg-[#FAF7F2] border border-[#DCD2C0] text-sm font-bold text-[#231F1D] focus:border-[#6B2D38] focus:outline-none"
               />
-              <span className="text-[11px] text-stone-400 mt-1 block">
+              <span className="text-[11px] text-[#8C827A] mt-1 block">
                 {result.per100ml.alcoholGrams} g etanol / 100 ml
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/70">
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
+            <div className="p-4 rounded-xl bg-white border border-[#DCD2C0]">
+              <label className="block text-xs font-semibold text-[#3D3733] mb-1">
                 Azúcares Residuales (g/L)
               </label>
               <input
@@ -165,15 +165,15 @@ export const WineELabelStudio: React.FC = () => {
                     residualSugarGPerL: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="w-full h-10 px-3 rounded-lg bg-white border border-stone-200 text-sm font-bold text-stone-900 focus:border-emerald-700 focus:outline-none"
+                className="w-full h-10 px-3 rounded-lg bg-[#FAF7F2] border border-[#DCD2C0] text-sm font-bold text-[#231F1D] focus:border-[#6B2D38] focus:outline-none"
               />
-              <span className="text-[11px] text-stone-400 mt-1 block">
+              <span className="text-[11px] text-[#8C827A] mt-1 block">
                 Equivale a {result.per100ml.sugars} g por 100 ml
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/70">
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
+            <div className="p-4 rounded-xl bg-white border border-[#DCD2C0]">
+              <label className="block text-xs font-semibold text-[#3D3733] mb-1">
                 Acidez Total (g/L ácido tartárico)
               </label>
               <input
@@ -187,12 +187,12 @@ export const WineELabelStudio: React.FC = () => {
                     totalAcidityGPerL: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="w-full h-10 px-3 rounded-lg bg-white border border-stone-200 text-sm font-bold text-stone-900 focus:border-emerald-700 focus:outline-none"
+                className="w-full h-10 px-3 rounded-lg bg-[#FAF7F2] border border-[#DCD2C0] text-sm font-bold text-[#231F1D] focus:border-[#6B2D38] focus:outline-none"
               />
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/70">
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
+            <div className="p-4 rounded-xl bg-white border border-[#DCD2C0]">
+              <label className="block text-xs font-semibold text-[#3D3733] mb-1">
                 Glicerol (g/L)
               </label>
               <input
@@ -206,16 +206,16 @@ export const WineELabelStudio: React.FC = () => {
                     glycerolGPerL: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="w-full h-10 px-3 rounded-lg bg-white border border-stone-200 text-sm font-bold text-stone-900 focus:border-emerald-700 focus:outline-none"
+                className="w-full h-10 px-3 rounded-lg bg-[#FAF7F2] border border-[#DCD2C0] text-sm font-bold text-[#231F1D] focus:border-[#6B2D38] focus:outline-none"
               />
             </div>
           </div>
 
           <div className="pt-2">
-            <p className="text-xs font-semibold text-stone-600 mb-2.5">
+            <p className="text-xs font-semibold text-[#5C534C] mb-2.5">
               Opciones y alérgenos del vino:
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-stone-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-[#3D3733]">
               {[
                 {
                   checked: wine.containsSulfites,
@@ -240,7 +240,7 @@ export const WineELabelStudio: React.FC = () => {
               ].map((opt) => (
                 <label
                   key={opt.key}
-                  className="flex items-center gap-2.5 p-3 rounded-xl bg-stone-50/70 border border-stone-200/70 cursor-pointer hover:bg-stone-100/60 transition-colors"
+                  className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-[#DCD2C0] cursor-pointer hover:bg-[#F4EFE6] transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -248,7 +248,7 @@ export const WineELabelStudio: React.FC = () => {
                     onChange={(e) =>
                       setWine({ ...wine, [opt.key]: e.target.checked })
                     }
-                    className="accent-emerald-800 w-4 h-4 rounded"
+                    className="accent-[#6B2D38] w-4 h-4 rounded"
                   />
                   <span className="font-medium">{opt.label}</span>
                 </label>
@@ -258,11 +258,11 @@ export const WineELabelStudio: React.FC = () => {
         </div>
       </div>
 
-      {/* Right 5 Cols: Soft Preview Card */}
+      {/* Right 5 Cols: Warm Preview Card */}
       <div className="lg:col-span-5 space-y-4">
-        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-5">
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-xl bg-stone-50 border border-stone-200/70">
-            <div className="bg-white p-2.5 rounded-xl border border-stone-200 shrink-0 shadow-2xs">
+        <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-xl bg-white border border-[#DCD2C0]">
+            <div className="bg-white p-2.5 rounded-xl border border-[#E2D9C8] shrink-0">
               <svg
                 viewBox={`0 0 ${qrMatrix.size + 4} ${qrMatrix.size + 4}`}
                 className="w-26 h-26"
@@ -282,7 +282,7 @@ export const WineELabelStudio: React.FC = () => {
                         y={r + 2}
                         width={1}
                         height={1}
-                        fill="#111613"
+                        fill="#231F1D"
                       />
                     ) : null
                   )
@@ -291,13 +291,13 @@ export const WineELabelStudio: React.FC = () => {
             </div>
 
             <div className="space-y-1.5 text-center sm:text-left">
-              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-semibold text-[#6B2D38] bg-[#F9F0F2] px-2.5 py-0.5 rounded-full">
                 Impresión en botella
               </span>
-              <p className="text-base font-bold text-stone-900 pt-1">
+              <p className="text-base font-bold text-[#231F1D] pt-1">
                 {result.bottleSymbolText}
               </p>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-[#6E655F]">
                 {result.allergensEs.length > 0
                   ? `Contiene: ${result.allergensEs.join(", ")}`
                   : "Exento de alérgenos"}
@@ -308,18 +308,18 @@ export const WineELabelStudio: React.FC = () => {
           {/* Mobile E-Label Preview */}
           <div className="pt-2">
             <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs font-semibold text-stone-500 flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="text-xs font-semibold text-[#5C534C] flex items-center gap-1.5">
+                <Smartphone className="w-3.5 h-3.5 text-[#6B2D38]" />
                 Vista en el móvil al escanear el QR:
               </span>
-              <div className="flex rounded-lg bg-stone-100 p-0.5 text-[11px] font-semibold">
+              <div className="flex rounded-lg bg-[#EBE4D8] p-0.5 text-[11px] font-semibold">
                 <button
                   type="button"
                   onClick={() => setPreviewLang("es")}
                   className={`px-2 py-0.5 rounded-md cursor-pointer ${
                     previewLang === "es"
-                      ? "bg-white text-stone-900 shadow-2xs"
-                      : "text-stone-500"
+                      ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
+                      : "text-[#6E655F]"
                   }`}
                 >
                   ES
@@ -329,8 +329,8 @@ export const WineELabelStudio: React.FC = () => {
                   onClick={() => setPreviewLang("en")}
                   className={`px-2 py-0.5 rounded-md cursor-pointer ${
                     previewLang === "en"
-                      ? "bg-white text-stone-900 shadow-2xs"
-                      : "text-stone-500"
+                      ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
+                      : "text-[#6E655F]"
                   }`}
                 >
                   EN
@@ -338,23 +338,23 @@ export const WineELabelStudio: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/70 border border-stone-200/70 text-xs space-y-2.5">
-              <p className="font-bold text-stone-900">
+            <div className="p-4 rounded-xl bg-white border border-[#DCD2C0] text-xs space-y-2.5">
+              <p className="font-bold text-[#231F1D]">
                 {wine.wineName} ({wine.vintageYear}) · {wine.abvPercent}% vol
               </p>
-              <table className="w-full text-xs border-t border-b border-stone-200 divide-y divide-stone-100">
-                <tbody className="divide-y divide-stone-100">
+              <table className="w-full text-xs border-t border-b border-[#E5DEC9] divide-y divide-[#F0E9DC]">
+                <tbody className="divide-y divide-[#F0E9DC]">
                   <tr>
-                    <td className="py-1.5 font-semibold text-stone-700">
+                    <td className="py-1.5 font-semibold text-[#3D3733]">
                       {previewLang === "es" ? "Valor energético" : "Energy"}
                     </td>
-                    <td className="py-1.5 text-right font-bold text-stone-900">
+                    <td className="py-1.5 text-right font-bold text-[#231F1D]">
                       {result.per100ml.energyKj} kJ /{" "}
                       {result.per100ml.energyKcal} kcal
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-1.5 text-stone-600">
+                    <td className="py-1.5 text-[#5C534C]">
                       {previewLang === "es"
                         ? "Hidratos de carbono"
                         : "Carbohydrates"}
@@ -362,7 +362,7 @@ export const WineELabelStudio: React.FC = () => {
                     <td className="py-1.5 text-right">{result.per100ml.carbs} g</td>
                   </tr>
                   <tr>
-                    <td className="py-1.5 pl-3 text-stone-400">
+                    <td className="py-1.5 pl-3 text-[#8C827A]">
                       {previewLang === "es"
                         ? "de los cuales azúcares"
                         : "of which sugars"}
@@ -372,8 +372,8 @@ export const WineELabelStudio: React.FC = () => {
                 </tbody>
               </table>
 
-              <p className="text-xs leading-relaxed text-stone-600 pt-1">
-                <strong className="text-stone-800">
+              <p className="text-xs leading-relaxed text-[#5C534C] pt-1">
+                <strong className="text-[#231F1D]">
                   {previewLang === "es" ? "Ingredientes: " : "Ingredients: "}
                 </strong>
                 {(previewLang === "es"
@@ -383,7 +383,7 @@ export const WineELabelStudio: React.FC = () => {
                   .split("**")
                   .map((chunk, i) =>
                     i % 2 === 1 ? (
-                      <strong key={i} className="underline font-semibold text-stone-900">
+                      <strong key={i} className="underline font-semibold text-[#231F1D]">
                         {chunk}
                       </strong>
                     ) : (
@@ -398,9 +398,9 @@ export const WineELabelStudio: React.FC = () => {
             <button
               type="button"
               onClick={handleDownloadWineSVG}
-              className="w-full h-11 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full h-11 px-4 rounded-xl bg-[#6B2D38] hover:bg-[#54212A] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <Download className="w-4 h-4 text-emerald-300" />
+              <Download className="w-4 h-4 text-[#F2D5DB]" />
               <span>Descargar etiqueta QR (.SVG)</span>
             </button>
 
@@ -408,7 +408,7 @@ export const WineELabelStudio: React.FC = () => {
               href={result.localELabelPath}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-10 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+              className="w-full h-10 px-4 rounded-xl bg-[#EBE4D8] hover:bg-[#DFD6C7] text-[#3D3733] text-xs font-semibold flex items-center justify-center gap-2 transition-all"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Abrir página pública del QR (5 idiomas)</span>
