@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,400..600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-background: #F6F3EC;
+  --color-surface: #FDFBF7;
+  --color-ink: #111613;
+  --color-primary: #0F291E;
+  --color-primary-light: #1A4231;
+  --color-accent: #D94E28;
+  --color-accent-hover: #BF3E1B;
+  --color-neutral: #5A625E;
+  --color-border: #DCD6C8;
+}
+
+body {
+  color: var(--color-ink);
+  background-color: var(--color-background);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  background-image: radial-gradient(rgba(15, 41, 30, 0.05) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.crop-marks {
+  position: relative;
+}
+.crop-marks::before,
+.crop-marks::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.crop-marks::before {
+  top: -5px;
+  left: -5px;
+  border-top: 1.5px solid var(--color-ink);
+  border-left: 1.5px solid var(--color-ink);
+}
+.crop-marks::after {
+  bottom: -5px;
+  right: -5px;
+  border-bottom: 1.5px solid var(--color-ink);
+  border-right: 1.5px solid var(--color-ink);
+}
+
+.nutrition-table-official {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.nutrition-table-official th,
+.nutrition-table-official td {
+  border-bottom: 1px solid #111613;
+  padding: 5px 6px;
+  font-size: 12.5px;
+}
+
+.nutrition-table-official th {
+  border-bottom: 2.5px solid #111613;
+}
