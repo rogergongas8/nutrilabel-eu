@@ -223,6 +223,18 @@ export function calculateRecipeNutrition(
     })
     .join(', ');
 
+  const ingredientsListFormattedEn = sortedItems
+    .map((item) => {
+      const percentage = ((item.amountGrams / rawWeightGrams) * 100).toFixed(1);
+      const isAllergenic = item.ingredient.allergens.length > 0;
+      const enName = item.ingredient.nameEn || item.ingredient.name;
+      if (isAllergenic) {
+        return `**${enName.toUpperCase()}** (${percentage}%)`;
+      }
+      return `${enName} (${percentage}%)`;
+    })
+    .join(', ');
+
   // 9. Ficha de justificación para inspección sanitaria
   const technicalAuditSheet = {
     calculationMethod:
@@ -250,6 +262,7 @@ export function calculateRecipeNutrition(
     referenceIntakePercent,
     allergens,
     ingredientsListFormatted,
+    ingredientsListFormattedEn,
     technicalAuditSheet,
   };
 }

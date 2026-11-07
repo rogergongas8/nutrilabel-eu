@@ -10,16 +10,20 @@ interface NutritionLabelProps {
   calculation: CalculationResult | null;
   onOpenAuditSheet: () => void;
   productName?: string;
+  lang?: "es" | "en";
 }
 
 export const NutritionLabel: React.FC<NutritionLabelProps> = ({
   calculation,
   onOpenAuditSheet,
   productName = "Producto Alimentario Artesanal",
+  lang = "es",
 }) => {
   const [standard, setStandard] = useState<"EU" | "FDA">("EU");
   const [isExporting, setIsExporting] = useState(false);
   const labelRef = useRef<HTMLDivElement>(null);
+
+  const isEn = lang === "en" || standard === "FDA";
 
   if (!calculation) {
     return (
@@ -28,10 +32,12 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           <FileCheck className="w-6 h-6" />
         </div>
         <h3 className="font-display text-xl font-bold text-primary">
-          Pliego de Impresión en Espera
+          {lang === "en" ? "Print Proof Waiting" : "Pliego de Impresión en Espera"}
         </h3>
         <p className="text-xs text-neutral mt-2 max-w-xs mx-auto">
-          Incorpora al menos un ingrediente en el escandallo para renderizar el arte final según el Anexo XV del Reglamento (UE) 1169/2011.
+          {lang === "en"
+            ? "Add at least one ingredient in Step 2 to generate your official EU 1169/2011 or US FDA nutrition label."
+            : "Incorpora al menos un ingrediente en el Paso 2 para renderizar tu etiqueta oficial según el Reglamento (UE) 1169/2011."}
         </p>
       </div>
     );
@@ -46,6 +52,31 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
   } = calculation;
 
   const buildLabelSVGString = () => {
+    const title = isEn
+      ? standard === "FDA"
+        ? "NUTRITION FACTS"
+        : "NUTRITION DECLARATION"
+      : "INFORMACIÓN NUTRICIONAL";
+    const col1 = isEn ? "Typical values" : "Valores medios";
+    const col2 = isEn ? "Per 100 g" : "Por 100 g";
+    const col3 = isEn ? `Per ${servingSizeGrams} g` : `Por ${servingSizeGrams} g`;
+    const col4 = isEn ? "% RI*" : "% IR*";
+
+    const rowEnergy = isEn ? "Energy" : "Valor energético";
+    const rowFat = isEn ? "Fat" : "Grasas";
+    const rowSat = isEn ? "of which saturates" : "de las cuales saturadas";
+    const rowCarbs = isEn ? "Carbohydrate" : "Hidratos de carbono";
+    const rowSugars = isEn ? "of which sugars" : "de los cuales azúcares";
+    const rowProtein = isEn ? "Protein" : "Proteínas";
+    const rowSalt = isEn ? "Salt" : "Sal";
+
+    const footer1 = isEn
+      ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal)"
+      : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)";
+    const footer2 = isEn
+      ? "Calculated per Art. 31.4 Regulation (EU) No 1169/2011"
+      : "Calculado conforme al Art. 31.4 Reglamento (UE) Nº 1169/2011";
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="440" height="310" viewBox="0 0 440 310">
   <style>
@@ -58,58 +89,58 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     .thick-line { stroke: #111613; stroke-width: 2.5; }
   </style>
   <rect width="440" height="310" fill="#ffffff" stroke="#111613" stroke-width="2.5"/>
-  <text x="18" y="30" class="title">${standard === "EU" ? "INFORMACIÓN NUTRICIONAL" : "NUTRITION FACTS"}</text>
+  <text x="18" y="30" class="title">${title}</text>
   <line x1="18" y1="38" x2="422" y2="38" class="thick-line"/>
-  <text x="18" y="54" class="header">Valores medios</text>
-  <text x="235" y="54" class="header">Por 100 g</text>
-  <text x="315" y="54" class="header">Por ${servingSizeGrams} g</text>
-  <text x="385" y="54" class="header">% IR*</text>
+  <text x="18" y="54" class="header">${col1}</text>
+  <text x="235" y="54" class="header">${col2}</text>
+  <text x="315" y="54" class="header">${col3}</text>
+  <text x="385" y="54" class="header">${col4}</text>
   <line x1="18" y1="61" x2="422" y2="61" class="line"/>
   
-  <text x="18" y="79" class="row bold">Valor energético</text>
+  <text x="18" y="79" class="row bold">${rowEnergy}</text>
   <text x="200" y="79" class="row">${per100g.energyKj} kJ / ${per100g.energyKcal} kcal</text>
   <text x="315" y="79" class="row">${perServing.energyKcal} kcal</text>
   <text x="390" y="79" class="row">${referenceIntakePercent.energy}%</text>
   <line x1="18" y1="87" x2="422" y2="87" class="line"/>
 
-  <text x="18" y="105" class="row bold">Grasas</text>
+  <text x="18" y="105" class="row bold">${rowFat}</text>
   <text x="235" y="105" class="row">${per100g.fat} g</text>
   <text x="315" y="105" class="row">${perServing.fat} g</text>
   <text x="390" y="105" class="row">${referenceIntakePercent.fat}%</text>
   <line x1="18" y1="113" x2="422" y2="113" class="line"/>
 
-  <text x="32" y="129" class="row">de las cuales saturadas</text>
+  <text x="32" y="129" class="row">${rowSat}</text>
   <text x="235" y="129" class="row">${per100g.saturatedFat} g</text>
   <text x="315" y="129" class="row">${perServing.saturatedFat} g</text>
   <text x="390" y="129" class="row">${referenceIntakePercent.saturatedFat}%</text>
   <line x1="18" y1="137" x2="422" y2="137" class="line"/>
 
-  <text x="18" y="155" class="row bold">Hidratos de carbono</text>
+  <text x="18" y="155" class="row bold">${rowCarbs}</text>
   <text x="235" y="155" class="row">${per100g.carbs} g</text>
   <text x="315" y="155" class="row">${perServing.carbs} g</text>
   <text x="390" y="155" class="row">${referenceIntakePercent.carbs}%</text>
   <line x1="18" y1="163" x2="422" y2="163" class="line"/>
 
-  <text x="32" y="179" class="row">de los cuales azúcares</text>
+  <text x="32" y="179" class="row">${rowSugars}</text>
   <text x="235" y="179" class="row">${per100g.sugars} g</text>
   <text x="315" y="179" class="row">${perServing.sugars} g</text>
   <text x="390" y="179" class="row">${referenceIntakePercent.sugars}%</text>
   <line x1="18" y1="187" x2="422" y2="187" class="line"/>
 
-  <text x="18" y="205" class="row bold">Proteínas</text>
+  <text x="18" y="205" class="row bold">${rowProtein}</text>
   <text x="235" y="205" class="row">${per100g.protein} g</text>
   <text x="315" y="205" class="row">${perServing.protein} g</text>
   <text x="390" y="205" class="row">${referenceIntakePercent.protein}%</text>
   <line x1="18" y1="213" x2="422" y2="213" class="line"/>
 
-  <text x="18" y="231" class="row bold">Sal</text>
+  <text x="18" y="231" class="row bold">${rowSalt}</text>
   <text x="235" y="231" class="row">${per100g.salt} g</text>
   <text x="315" y="231" class="row">${perServing.salt} g</text>
   <text x="390" y="231" class="row">${referenceIntakePercent.salt}%</text>
   <line x1="18" y1="240" x2="422" y2="240" class="thick-line"/>
 
-  <text x="18" y="262" class="sub">* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)</text>
-  <text x="18" y="278" class="sub">Calculado conforme al Art. 31.4 Reglamento (UE) Nº 1169/2011</text>
+  <text x="18" y="262" class="sub">${footer1}</text>
+  <text x="18" y="278" class="sub">${footer2}</text>
 </svg>`.trim();
   };
 
@@ -120,7 +151,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `etiqueta-nutricional-${productName
+    link.download = `nutrition-label-${productName
       .toLowerCase()
       .replace(/\s+/g, "-")}.svg`;
     document.body.appendChild(link);
@@ -137,7 +168,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     const url = URL.createObjectURL(svgBlob);
     const img = new window.Image();
     img.onload = () => {
-      const scale = 3; // 3x scale for 300 DPI print crispness
+      const scale = 3;
       const canvas = document.createElement("canvas");
       canvas.width = 440 * scale;
       canvas.height = 310 * scale;
@@ -148,7 +179,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         const pngUrl = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.href = pngUrl;
-        link.download = `etiqueta-nutricional-300dpi-${productName
+        link.download = `nutrition-label-300dpi-${productName
           .toLowerCase()
           .replace(/\s+/g, "-")}.png`;
         document.body.appendChild(link);
@@ -161,12 +192,16 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     img.src = url;
   };
 
+  const displayedIngredientList = isEn
+    ? calculation.ingredientsListFormattedEn || calculation.ingredientsListFormatted
+    : calculation.ingredientsListFormatted;
+
   return (
     <div className="space-y-4">
       {/* Jurisdiction Switcher Bar */}
       <div className="bg-surface border-2 border-primary p-2.5 flex items-center justify-between">
         <span className="font-mono text-xs font-bold uppercase tracking-wider text-primary pl-1">
-          Normativa de Etiqueta:
+          {lang === "en" ? "Label Standard:" : "Normativa de Etiqueta:"}
         </span>
 
         <div className="flex border border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
@@ -179,7 +214,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 : "text-primary hover:bg-primary/10"
             }`}
           >
-            UE 1169/2011
+            EU / UK 1169/2011
           </button>
           <button
             type="button"
@@ -201,23 +236,35 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         className="bg-white border-2 border-ink p-5 shadow-tactile relative crop-marks"
       >
         <div className="flex items-center justify-between font-mono text-[10px] text-neutral border-b border-dashed border-ink/30 pb-2 mb-3">
-          <span>ARTE FINAL IMPRENTA · ALTURA x ≥ 1,2 mm</span>
-          <span>PESO NETO LOTE: {calculation.finishedWeightGrams.toFixed(0)} g</span>
+          <span>
+            {isEn
+              ? "PRINT PROOF · X-HEIGHT ≥ 1.2 mm"
+              : "ARTE FINAL IMPRENTA · ALTURA x ≥ 1,2 mm"}
+          </span>
+          <span>
+            {isEn ? "NET BATCH:" : "PESO NETO LOTE:"}{" "}
+            {calculation.finishedWeightGrams.toFixed(0)} g
+          </span>
         </div>
 
         <div className="border-b-4 border-ink pb-2 mb-2">
           <div className="flex items-baseline justify-between">
             <h3 className="text-lg font-black tracking-tight text-ink uppercase font-sans">
-              {standard === "EU" ? "Información Nutricional" : "Nutrition Facts"}
+              {standard === "FDA"
+                ? "Nutrition Facts"
+                : isEn
+                ? "Nutrition Declaration"
+                : "Información Nutricional"}
             </h3>
             <span className="font-mono text-[10px] font-bold text-ink">
-              {standard === "EU" ? "ANEXO XV UE" : "FDA 21 CFR"}
+              {standard === "EU" ? "ANNEX XV EU/UK" : "FDA 21 CFR"}
             </span>
           </div>
           <p className="text-xs text-ink/80 font-sans">
-            Ración declarada:{" "}
+            {isEn ? "Serving size:" : "Ración declarada:"}{" "}
             <strong className="font-bold text-ink">{servingSizeGrams} g</strong> (
-            {calculation.servingsCount} raciones por envase)
+            {calculation.servingsCount}{" "}
+            {isEn ? "servings per container" : "raciones por envase"})
           </p>
         </div>
 
@@ -226,15 +273,25 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           <table className="nutrition-table-official text-ink">
             <thead>
               <tr className="border-b-2 border-ink text-left text-xs font-black">
-                <th className="py-1.5 px-1">Valores medios</th>
-                <th className="py-1.5 px-1 text-right">Por 100 g</th>
-                <th className="py-1.5 px-1 text-right">Por {servingSizeGrams} g</th>
-                <th className="py-1.5 px-1 text-right">% IR*</th>
+                <th className="py-1.5 px-1">
+                  {isEn ? "Typical values" : "Valores medios"}
+                </th>
+                <th className="py-1.5 px-1 text-right">
+                  {isEn ? "Per 100 g" : "Por 100 g"}
+                </th>
+                <th className="py-1.5 px-1 text-right">
+                  {isEn ? `Per ${servingSizeGrams} g` : `Por ${servingSizeGrams} g`}
+                </th>
+                <th className="py-1.5 px-1 text-right">
+                  {isEn ? "% RI*" : "% IR*"}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/30 font-sans text-xs">
               <tr className="font-bold">
-                <td className="py-1.5 px-1">Valor energético</td>
+                <td className="py-1.5 px-1">
+                  {isEn ? "Energy" : "Valor energético"}
+                </td>
                 <td className="py-1.5 px-1 text-right">
                   {per100g.energyKj} kJ / {per100g.energyKcal} kcal
                 </td>
@@ -247,7 +304,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
               </tr>
 
               <tr className="font-bold">
-                <td className="py-1.5 px-1">Grasas</td>
+                <td className="py-1.5 px-1">{isEn ? "Fat" : "Grasas"}</td>
                 <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.fat, "macro")}
                 </td>
@@ -259,7 +316,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 </td>
               </tr>
               <tr className="text-ink/80">
-                <td className="py-1 px-1 pl-4">de las cuales saturadas</td>
+                <td className="py-1 px-1 pl-4">
+                  {isEn ? "of which saturates" : "de las cuales saturadas"}
+                </td>
                 <td className="py-1 px-1 text-right">
                   {formatNutrientDisplay(per100g.saturatedFat, "saturated")}
                 </td>
@@ -272,7 +331,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
               </tr>
 
               <tr className="font-bold">
-                <td className="py-1.5 px-1">Hidratos de carbono</td>
+                <td className="py-1.5 px-1">
+                  {isEn ? "Carbohydrate" : "Hidratos de carbono"}
+                </td>
                 <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.carbs, "macro")}
                 </td>
@@ -284,7 +345,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
                 </td>
               </tr>
               <tr className="text-ink/80">
-                <td className="py-1 px-1 pl-4">de los cuales azúcares</td>
+                <td className="py-1 px-1 pl-4">
+                  {isEn ? "of which sugars" : "de los cuales azúcares"}
+                </td>
                 <td className="py-1 px-1 text-right">
                   {formatNutrientDisplay(per100g.sugars, "macro")}
                 </td>
@@ -297,7 +360,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
               </tr>
 
               <tr className="font-bold">
-                <td className="py-1.5 px-1">Proteínas</td>
+                <td className="py-1.5 px-1">{isEn ? "Protein" : "Proteínas"}</td>
                 <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.protein, "macro")}
                 </td>
@@ -310,7 +373,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
               </tr>
 
               <tr className="font-bold border-b-2 border-ink">
-                <td className="py-1.5 px-1">Sal</td>
+                <td className="py-1.5 px-1">{isEn ? "Salt" : "Sal"}</td>
                 <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.salt, "salt")}
                 </td>
@@ -326,16 +389,20 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         </div>
 
         <p className="mt-2 text-[10px] text-ink/70 leading-snug font-sans">
-          * Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal) conforme al Anexo XIII del Reglamento (UE) Nº 1169/2011.
+          {isEn
+            ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal) per Annex XIII Regulation (EU) No 1169/2011."
+            : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal) conforme al Anexo XIII del Reglamento (UE) Nº 1169/2011."}
         </p>
 
         {/* Mandatory Ingredients & Allergen Typography Box */}
         <div className="mt-3 pt-3 border-t-2 border-ink">
           <p className="font-sans text-[11px] font-black uppercase tracking-wide text-ink">
-            INGREDIENTES (ORDEN PONDERADO ART. 18 Y 21 UE):
+            {isEn
+              ? "INGREDIENTS (DESCENDING WEIGHT ORDER ART. 18 & 21):"
+              : "INGREDIENTES (ORDEN PONDERADO ART. 18 Y 21 UE):"}
           </p>
           <p className="mt-1 text-xs text-ink leading-relaxed font-sans">
-            {calculation.ingredientsListFormatted.split("**").map((chunk, i) =>
+            {displayedIngredientList.split("**").map((chunk, i) =>
               i % 2 === 1 ? (
                 <strong
                   key={i}
@@ -352,10 +419,17 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           {allergens.length > 0 && (
             <div className="mt-2.5 p-2 bg-[#F6F3EC] border-l-4 border-accent text-xs text-primary font-mono">
               <strong className="text-accent uppercase block text-[10px]">
-                DECLARACIÓN DE ALÉRGENOS (ANEXO II UE):
+                {isEn
+                  ? "ALLERGEN DECLARATION (ANNEX II EU):"
+                  : "DECLARACIÓN DE ALÉRGENOS (ANEXO II UE):"}
               </strong>
-              Contiene:{" "}
-              <strong>{allergens.map((a) => a.nameEs).join(", ")}</strong>.
+              {isEn ? "Contains: " : "Contiene: "}
+              <strong>
+                {allergens
+                  .map((a) => (isEn ? a.nameEn : a.nameEs))
+                  .join(", ")}
+              </strong>
+              .
             </div>
           )}
         </div>
@@ -371,7 +445,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           className="w-full"
         >
           <Download className="w-4 h-4" />
-          <span>Descargar Vector (.SVG)</span>
+          <span>
+            {lang === "en" ? "Download Vector (.SVG)" : "Descargar Vector (.SVG)"}
+          </span>
         </Button>
 
         <Button
@@ -382,7 +458,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           className="w-full bg-white"
         >
           <ImageIcon className="w-4 h-4 text-accent" />
-          <span>Descargar 300 DPI (.PNG)</span>
+          <span>
+            {lang === "en" ? "Download 300 DPI (.PNG)" : "Descargar 300 DPI (.PNG)"}
+          </span>
         </Button>
       </div>
 
@@ -393,13 +471,19 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
         className="w-full"
       >
         <Shield className="w-4 h-4 text-accent" />
-        <span>Ver Expediente Técnico APPCC (Inspección Sanidad)</span>
+        <span>
+          {lang === "en"
+            ? "View HACCP / Sanitary Inspection Dossier"
+            : "Ver Expediente Técnico APPCC (Inspección Sanidad)"}
+        </span>
       </Button>
 
       <div className="p-2.5 bg-surface border border-primary/30 text-[11px] text-primary flex items-center gap-2 font-mono">
         <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
         <span>
-          Trazabilidad Art. 31.4 Reglamento (UE) 1169/2011 (±20% tolerancia CE).
+          {lang === "en"
+            ? "Compliant with Art. 31.4 Regulation (EU) 1169/2011 (±20% EC tolerance)."
+            : "Trazabilidad Art. 31.4 Reglamento (UE) 1169/2011 (±20% tolerancia CE)."}
         </span>
       </div>
     </div>

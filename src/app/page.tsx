@@ -8,7 +8,6 @@ import {
   PackageCheck,
   PlusCircle,
   Sparkles,
-  ArrowRight,
   CheckCircle2,
 } from "lucide-react";
 import { RecipeBuilder } from "@/components/RecipeBuilder";
@@ -16,13 +15,13 @@ import { NutritionLabel } from "@/components/NutritionLabel";
 import { WineELabelStudio } from "@/components/WineELabelStudio";
 import { TechnicalSheetModal } from "@/components/TechnicalSheetModal";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RecipeItem, Ingredient } from "@/types/nutrition";
 import { VERIFIED_INGREDIENTS } from "@/data/ingredients";
 import { calculateRecipeNutrition } from "@/lib/calculator";
 
 export default function NutriLabelToolFirstPage() {
+  const [lang, setLang] = useState<"es" | "en">("es");
   const [workMode, setWorkMode] = useState<"food" | "wine">("food");
   const [productName, setProductName] = useState(
     "Galletas Artesanas de Avena y Miel (Ejemplo)"
@@ -34,6 +33,7 @@ export default function NutriLabelToolFirstPage() {
 
   const productInputRef = useRef<HTMLInputElement>(null);
   const labelPreviewRef = useRef<HTMLDivElement>(null);
+  const isEn = lang === "en";
 
   const [recipeItems, setRecipeItems] = useState<RecipeItem[]>(() => {
     const find = (id: string) => VERIFIED_INGREDIENTS.find((i) => i.id === id)!;
@@ -99,7 +99,11 @@ export default function NutriLabelToolFirstPage() {
     setIsExampleMode(true);
     const find = (id: string) => VERIFIED_INGREDIENTS.find((i) => i.id === id)!;
     if (preset === "galletas") {
-      setProductName("Galletas Artesanas de Avena y Miel (Ejemplo)");
+      setProductName(
+        isEn
+          ? "Artisanal Oat & Honey Cookies (Sample)"
+          : "Galletas Artesanas de Avena y Miel (Ejemplo)"
+      );
       setEvaporationPercent(12);
       setServingsCount(12);
       setRecipeItems([
@@ -111,7 +115,11 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "nueces-peladas", ingredient: find("nueces-peladas"), amountGrams: 40 },
       ]);
     } else if (preset === "mermelada") {
-      setProductName("Mermelada Extra de Fresa (Ejemplo)");
+      setProductName(
+        isEn
+          ? "Extra Strawberry Artisan Jam (Sample)"
+          : "Mermelada Extra de Fresa (Ejemplo)"
+      );
       setEvaporationPercent(22);
       setServingsCount(10);
       setRecipeItems([
@@ -120,7 +128,11 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "agua-potable", ingredient: find("agua-potable"), amountGrams: 40 },
       ]);
     } else if (preset === "salsa") {
-      setProductName("Salsa Napolitana con AOVE (Ejemplo)");
+      setProductName(
+        isEn
+          ? "Neapolitan Tomato Sauce with EVOO (Sample)"
+          : "Salsa Napolitana con AOVE (Ejemplo)"
+      );
       setEvaporationPercent(15);
       setServingsCount(6);
       setRecipeItems([
@@ -131,7 +143,11 @@ export default function NutriLabelToolFirstPage() {
         { ingredientId: "sal-comun", ingredient: find("sal-comun"), amountGrams: 8 },
       ]);
     } else if (preset === "mealprep") {
-      setProductName("Tupper Fitness: Pollo con Garbanzos (Ejemplo)");
+      setProductName(
+        isEn
+          ? "High-Protein Chicken & Chickpea Bowl (Sample)"
+          : "Tupper Fitness: Pollo con Garbanzos (Ejemplo)"
+      );
       setEvaporationPercent(8);
       setServingsCount(1);
       setRecipeItems([
@@ -162,40 +178,70 @@ export default function NutriLabelToolFirstPage() {
                 <span className="font-display text-xl font-extrabold text-primary">
                   NutriLabel
                 </span>
-                <Badge variant="mono">NORMATIVA UE 1169/2011</Badge>
+                <Badge variant="mono">EU / UK 1169/2011 &amp; FDA</Badge>
               </div>
               <p className="font-mono text-[10px] text-neutral uppercase">
-                Generador Oficial de Etiquetas Nutricionales · BEDCA / USDA
+                {isEn
+                  ? "Official Nutrition Label & Wine E-Label Generator · BEDCA / USDA"
+                  : "Generador Oficial de Etiquetas Nutricionales · BEDCA / USDA"}
               </p>
             </div>
           </div>
 
-          {/* 2-Mode Switcher */}
-          <div className="flex border-2 border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setWorkMode("food")}
-              className={`px-3.5 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer ${
-                workMode === "food"
-                  ? "bg-primary text-[#F6F3EC]"
-                  : "text-primary hover:bg-primary/10"
-              }`}
-            >
-              <PackageCheck className="w-3.5 h-3.5" />
-              <span>Etiqueta de Alimentos</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setWorkMode("wine")}
-              className={`px-3.5 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer ${
-                workMode === "wine"
-                  ? "bg-primary text-[#F6F3EC]"
-                  : "text-primary hover:bg-primary/10"
-              }`}
-            >
-              <Wine className="w-3.5 h-3.5" />
-              <span>Etiqueta QR de Vinos</span>
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* 2-Mode Switcher */}
+            <div className="flex border-2 border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setWorkMode("food")}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  workMode === "food"
+                    ? "bg-primary text-[#F6F3EC]"
+                    : "text-primary hover:bg-primary/10"
+                }`}
+              >
+                <PackageCheck className="w-3.5 h-3.5" />
+                <span>{isEn ? "Food Labels" : "Etiqueta de Alimentos"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setWorkMode("wine")}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  workMode === "wine"
+                    ? "bg-primary text-[#F6F3EC]"
+                    : "text-primary hover:bg-primary/10"
+                }`}
+              >
+                <Wine className="w-3.5 h-3.5" />
+                <span>{isEn ? "Wine QR E-Label" : "Etiqueta QR de Vinos"}</span>
+              </button>
+            </div>
+
+            {/* Global Language Switcher ES | EN */}
+            <div className="flex border-2 border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setLang("es")}
+                className={`px-2.5 py-1.5 transition-colors cursor-pointer ${
+                  lang === "es"
+                    ? "bg-accent text-white"
+                    : "text-primary hover:bg-primary/10"
+                }`}
+              >
+                ES
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-2.5 py-1.5 transition-colors cursor-pointer ${
+                  lang === "en"
+                    ? "bg-accent text-white"
+                    : "text-primary hover:bg-primary/10"
+                }`}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -208,29 +254,58 @@ export default function NutriLabelToolFirstPage() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-2 max-w-2xl">
                   <span className="inline-block font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 bg-accent text-white font-bold">
-                    ¿CÓMO FUNCIONA? · EN 3 PASOS SIMPLES
+                    {isEn
+                      ? "HOW IT WORKS · 3 SIMPLE STEPS"
+                      : "¿CÓMO FUNCIONA? · EN 3 PASOS SIMPLES"}
                   </span>
                   <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight">
-                    Crea tu Etiqueta Nutricional Oficial lista para imprimir
+                    {isEn
+                      ? "Create your official print-ready Nutrition Label in seconds"
+                      : "Crea tu Etiqueta Nutricional Oficial lista para imprimir"}
                   </h1>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-[#F6F3EC]/90 font-sans">
                     <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
                       <span className="font-mono font-black text-accent">1.</span>
                       <span>
-                        <strong>Pon el nombre</strong> de tu producto o pulsa{" "}
-                        <em>&ldquo;Empezar Etiqueta desde Cero&rdquo;</em>.
+                        {isEn ? (
+                          <>
+                            <strong>Enter your product name</strong> or click{" "}
+                            <em>&ldquo;Start New Blank Label&rdquo;</em>.
+                          </>
+                        ) : (
+                          <>
+                            <strong>Pon el nombre</strong> de tu producto o pulsa{" "}
+                            <em>&ldquo;Empezar Etiqueta desde Cero&rdquo;</em>.
+                          </>
+                        )}
                       </span>
                     </div>
                     <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
                       <span className="font-mono font-black text-accent">2.</span>
                       <span>
-                        <strong>Añade tus ingredientes</strong> y los gramos que usas en tu receta.
+                        {isEn ? (
+                          <>
+                            <strong>Add your ingredients</strong> and their weight in grams.
+                          </>
+                        ) : (
+                          <>
+                            <strong>Añade tus ingredientes</strong> y los gramos que usas en tu receta.
+                          </>
+                        )}
                       </span>
                     </div>
                     <div className="flex items-start gap-2 bg-white/10 p-2.5 border border-white/15">
                       <span className="font-mono font-black text-accent">3.</span>
                       <span>
-                        <strong>Descarga la etiqueta</strong> (PNG o SVG) lista para pegar en tu envase.
+                        {isEn ? (
+                          <>
+                            <strong>Download your label</strong> (300 DPI PNG or vector SVG) for free.
+                          </>
+                        ) : (
+                          <>
+                            <strong>Descarga la etiqueta</strong> (PNG o SVG) lista para pegar en tu envase.
+                          </>
+                        )}
                       </span>
                     </div>
                   </div>
@@ -244,17 +319,25 @@ export default function NutriLabelToolFirstPage() {
                     className="h-12 px-5 bg-accent hover:bg-[#b83d1b] text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-white shadow-lg transition-all cursor-pointer"
                   >
                     <PlusCircle className="w-5 h-5" />
-                    <span>Crear Mi Propia Etiqueta (Desde Cero)</span>
+                    <span>
+                      {isEn
+                        ? "Create My Own Label (Start Blank)"
+                        : "Crear Mi Propia Etiqueta (Desde Cero)"}
+                    </span>
                   </button>
 
                   {isExampleMode ? (
                     <span className="font-mono text-[11px] text-[#F6F3EC]/80 text-center">
-                      👆 Ahora estás viendo una receta de ejemplo. Pulsa arriba para vaciarla.
+                      {isEn
+                        ? "👆 Viewing a sample recipe. Click above to start blank."
+                        : "👆 Ahora estás viendo una receta de ejemplo. Pulsa arriba para vaciarla."}
                     </span>
                   ) : (
                     <span className="font-mono text-[11px] text-emerald-300 text-center flex items-center justify-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Modo creación activo: rellena tus ingredientes abajo
+                      {isEn
+                        ? "Creation mode active: add your ingredients below"
+                        : "Modo creación activo: rellena tus ingredientes abajo"}
                     </span>
                   )}
                 </div>
@@ -267,20 +350,26 @@ export default function NutriLabelToolFirstPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="px-2 py-0.5 bg-primary text-[#F6F3EC] font-mono text-[10px] font-bold uppercase">
-                      PASO 1 DE 3
+                      {isEn ? "STEP 1 OF 3" : "PASO 1 DE 3"}
                     </span>
                     <label
                       htmlFor="product-title-input"
                       className="font-mono text-xs font-bold uppercase text-primary"
                     >
-                      ¿Cómo se llama tu producto?
+                      {isEn
+                        ? "What is your product's name?"
+                        : "¿Cómo se llama tu producto?"}
                     </label>
                   </div>
                   <input
                     ref={productInputRef}
                     id="product-title-input"
                     type="text"
-                    placeholder="Escribe aquí el nombre de tu producto (ej. Bizcocho Casero de Yogur, Salsa Brava...)"
+                    placeholder={
+                      isEn
+                        ? "Type your product name here (e.g. Homemade Yogurt Cake, Artisan Hot Sauce...)"
+                        : "Escribe aquí el nombre de tu producto (ej. Bizcocho Casero de Yogur, Salsa Brava...)"
+                    }
                     value={productName}
                     onChange={(e) => {
                       setIsExampleMode(false);
@@ -294,15 +383,29 @@ export default function NutriLabelToolFirstPage() {
                 <div className="shrink-0">
                   <span className="font-mono text-[10px] font-bold uppercase text-neutral block mb-1.5 flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-accent" />
-                    ¿O prefieres cargar una plantilla rápida?
+                    {isEn
+                      ? "Or test with a sample recipe:"
+                      : "¿O prefieres cargar una plantilla rápida?"}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {(
                       [
-                        { id: "galletas", label: "🍪 Galletas" },
-                        { id: "mermelada", label: "🍓 Mermelada" },
-                        { id: "salsa", label: "🍅 Salsa" },
-                        { id: "mealprep", label: "🍗 Tupper Pollo" },
+                        {
+                          id: "galletas",
+                          label: isEn ? "🍪 Cookies" : "🍪 Galletas",
+                        },
+                        {
+                          id: "mermelada",
+                          label: isEn ? "🍓 Jam" : "🍓 Mermelada",
+                        },
+                        {
+                          id: "salsa",
+                          label: isEn ? "🍅 Sauce" : "🍅 Salsa",
+                        },
+                        {
+                          id: "mealprep",
+                          label: isEn ? "🍗 Meal Prep" : "🍗 Tupper Pollo",
+                        },
                       ] as const
                     ).map((p) => (
                       <button
@@ -333,6 +436,7 @@ export default function NutriLabelToolFirstPage() {
                   onUpdateServings={setServingsCount}
                   onStartBlank={handleStartNewBlankLabel}
                   onScrollToLabel={scrollToLabel}
+                  lang={lang}
                 />
               </div>
 
@@ -342,7 +446,9 @@ export default function NutriLabelToolFirstPage() {
               >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="px-2.5 py-1 bg-accent text-white font-mono text-xs font-bold uppercase">
-                    PASO 3 DE 3 · TU ETIQUETA GENERADA EN VIVO
+                    {isEn
+                      ? "STEP 3 OF 3 · LIVE GENERATED LABEL"
+                      : "PASO 3 DE 3 · TU ETIQUETA GENERADA EN VIVO"}
                   </span>
                   {recipeItems.length > 0 && (
                     <button
@@ -351,7 +457,7 @@ export default function NutriLabelToolFirstPage() {
                       className="font-mono text-xs font-bold text-primary underline hover:text-accent flex items-center gap-1 cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5 text-accent" />
-                      <span>Informe Sanidad</span>
+                      <span>{isEn ? "HACCP Report" : "Informe Sanidad"}</span>
                     </button>
                   )}
                 </div>
@@ -359,7 +465,10 @@ export default function NutriLabelToolFirstPage() {
                 <NutritionLabel
                   calculation={calculation}
                   onOpenAuditSheet={() => setIsAuditSheetOpen(true)}
-                  productName={productName || "Mi Producto"}
+                  productName={
+                    productName || (isEn ? "My Food Product" : "Mi Producto")
+                  }
+                  lang={lang}
                 />
               </div>
             </div>
@@ -375,7 +484,7 @@ export default function NutriLabelToolFirstPage() {
         isOpen={isAuditSheetOpen}
         onClose={() => setIsAuditSheetOpen(false)}
         calculation={calculation}
-        productName={productName || "Mi Producto"}
+        productName={productName || (isEn ? "My Food Product" : "Mi Producto")}
       />
     </div>
   );

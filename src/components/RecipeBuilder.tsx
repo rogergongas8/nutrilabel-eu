@@ -34,6 +34,7 @@ interface RecipeBuilderProps {
   onUpdateServings: (val: number) => void;
   onStartBlank: () => void;
   onScrollToLabel: () => void;
+  lang?: "es" | "en";
 }
 
 const CUSTOM_INGREDIENTS_STORAGE_KEY = "nutrilabel_custom_ingredients_v1";
@@ -49,6 +50,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   onUpdateServings,
   onStartBlank,
   onScrollToLabel,
+  lang = "es",
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -61,7 +63,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
   // Custom ingredient form state
   const [customName, setCustomName] = useState("");
-  const [customSupplier, setCustomSupplier] = useState("Ficha Técnica Proveedor");
+  const [customSupplier, setCustomSupplier] = useState("Supplier Spec Sheet");
   const [customKcal, setCustomKcal] = useState("250");
   const [customFat, setCustomFat] = useState("10");
   const [customSatFat, setCustomSatFat] = useState("2.5");
@@ -72,6 +74,8 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   const [customSalt, setCustomSalt] = useState("0.5");
   const [customWeightToAdd, setCustomWeightToAdd] = useState("100");
   const [customAllergens, setCustomAllergens] = useState<AllergenKey[]>([]);
+
+  const isEn = lang === "en";
 
   useEffect(() => {
     try {
@@ -134,8 +138,8 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       id: `custom-${Date.now()}`,
       name: customName.trim(),
       nameEn: customName.trim(),
-      category: "Mis Ingredientes (Proveedor)",
-      source: customSupplier.trim() || "Ficha Técnica Proveedor",
+      category: "Custom (Supplier)",
+      source: customSupplier.trim() || "Supplier Spec Sheet",
       nutrients: {
         energyKj: kj,
         energyKcal: kcal,
@@ -179,14 +183,24 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 bg-primary text-[#F6F3EC] font-mono text-[10px] font-bold uppercase">
-                PASO 2 DE 3
+                {isEn ? "STEP 2 OF 3" : "PASO 2 DE 3"}
               </span>
               <h3 className="font-display text-xl font-bold text-primary">
-                Busca y añade tus ingredientes
+                {isEn
+                  ? "Search & Add Your Ingredients"
+                  : "Busca y añade tus ingredientes"}
               </h3>
             </div>
             <p className="text-xs text-neutral mt-1">
-              Elige entre <strong>{allIngredients.length} ingredientes oficiales</strong>, pon los gramos que usas y pulsa <strong>&ldquo;+ Añadir&rdquo;</strong>:
+              {isEn ? (
+                <>
+                  Choose from <strong>{allIngredients.length} official ingredients</strong>, enter grams, and click <strong>&ldquo;+ Add&rdquo;</strong>:
+                </>
+              ) : (
+                <>
+                  Elige entre <strong>{allIngredients.length} ingredientes oficiales</strong>, pon los gramos que usas y pulsa <strong>&ldquo;+ Añadir&rdquo;</strong>:
+                </>
+              )}
             </p>
           </div>
 
@@ -196,7 +210,11 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             className="font-mono text-xs font-bold text-accent hover:text-primary flex items-center gap-1.5 bg-white px-3 py-2 border-2 border-primary/40 hover:border-primary transition-colors cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>¿No está tu ingrediente? Créalo aquí</span>
+            <span>
+              {isEn
+                ? "+ Create Custom Ingredient"
+                : "¿No está tu ingrediente? Créalo aquí"}
+            </span>
           </button>
         </div>
 
@@ -209,10 +227,14 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             <div className="flex items-center justify-between border-b border-primary/20 pb-2">
               <div>
                 <span className="font-mono text-[10px] font-bold uppercase text-accent">
-                  CREAR INGREDIENTE PERSONALIZADO (VALORES POR 100 G)
+                  {isEn
+                    ? "CREATE CUSTOM INGREDIENT (VALUES PER 100 G)"
+                    : "CREAR INGREDIENTE PERSONALIZADO (VALORES POR 100 G)"}
                 </span>
                 <p className="text-xs text-primary font-semibold">
-                  Copia los datos nutricionales por cada 100 g del envase o ficha de tu proveedor:
+                  {isEn
+                    ? "Enter the nutrition values per 100 g from your supplier's package or spec sheet:"
+                    : "Copia los datos nutricionales por cada 100 g del envase o ficha de tu proveedor:"}
                 </p>
               </div>
               <button
@@ -227,12 +249,16 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2">
                 <label className="block font-mono text-[11px] font-bold text-primary mb-1">
-                  Nombre del Ingrediente *
+                  {isEn ? "Ingredient Name *" : "Nombre del Ingrediente *"}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Chocolate Negro 70% Especial Obrador"
+                  placeholder={
+                    isEn
+                      ? "e.g. 70% Dark Chocolate Couverture"
+                      : "Ej. Chocolate Negro 70% Especial Obrador"
+                  }
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   className="w-full h-9 px-3 bg-white border border-primary text-xs font-bold text-primary"
@@ -240,7 +266,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[11px] font-bold text-primary mb-1">
-                  Marca / Proveedor
+                  {isEn ? "Brand / Supplier" : "Marca / Proveedor"}
                 </label>
                 <input
                   type="text"
@@ -254,7 +280,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Calorías (kcal/100g)
+                  {isEn ? "Calories (kcal/100g)" : "Calorías (kcal/100g)"}
                 </label>
                 <input
                   type="number"
@@ -266,7 +292,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Grasas totales (g)
+                  {isEn ? "Total Fat (g)" : "Grasas totales (g)"}
                 </label>
                 <input
                   type="number"
@@ -278,7 +304,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Saturadas (g)
+                  {isEn ? "Saturates (g)" : "Saturadas (g)"}
                 </label>
                 <input
                   type="number"
@@ -290,7 +316,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Hidratos carbono (g)
+                  {isEn ? "Carbohydrates (g)" : "Hidratos carbono (g)"}
                 </label>
                 <input
                   type="number"
@@ -302,7 +328,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Azúcares (g)
+                  {isEn ? "Sugars (g)" : "Azúcares (g)"}
                 </label>
                 <input
                   type="number"
@@ -314,7 +340,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Fibra (g)
+                  {isEn ? "Fiber (g)" : "Fibra (g)"}
                 </label>
                 <input
                   type="number"
@@ -326,7 +352,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Proteínas (g)
+                  {isEn ? "Protein (g)" : "Proteínas (g)"}
                 </label>
                 <input
                   type="number"
@@ -338,7 +364,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
               <div>
                 <label className="block font-mono text-[10px] font-bold text-primary">
-                  Sal (g)
+                  {isEn ? "Salt (g)" : "Sal (g)"}
                 </label>
                 <input
                   type="number"
@@ -352,12 +378,17 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
             <div>
               <label className="block font-mono text-[10px] font-bold uppercase text-primary mb-1.5">
-                ¿Contiene algún alérgeno obligatorio? (Pulsa si aplica):
+                {isEn
+                  ? "Contains any of the 14 mandatory EU allergens? (Click if applicable):"
+                  : "¿Contiene algún alérgeno obligatorio? (Pulsa si aplica):"}
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {(Object.keys(MANDATORY_EU_ALLERGENS) as AllergenKey[]).map(
                   (key) => {
                     const active = customAllergens.includes(key);
+                    const labelText = isEn
+                      ? MANDATORY_EU_ALLERGENS[key].nameEn.split(" ")[0]
+                      : MANDATORY_EU_ALLERGENS[key].nameEs.split(" ")[0];
                     return (
                       <button
                         key={key}
@@ -370,7 +401,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                         }`}
                       >
                         {active ? "✓ " : ""}
-                        {MANDATORY_EU_ALLERGENS[key].nameEs.split(" ")[0]}
+                        {labelText}
                       </button>
                     );
                   }
@@ -381,7 +412,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-primary/20">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-primary">
-                  Gramos a añadir a la receta:
+                  {isEn ? "Grams to add to recipe:" : "Gramos a añadir a la receta:"}
                 </span>
                 <input
                   type="number"
@@ -395,7 +426,9 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
               <Button type="submit" variant="accent" size="sm">
                 <Check className="w-3.5 h-3.5" />
-                <span>Guardar y Añadir a Mi Receta</span>
+                <span>
+                  {isEn ? "Save & Add to Recipe" : "Guardar y Añadir a Mi Receta"}
+                </span>
               </Button>
             </div>
           </form>
@@ -405,7 +438,11 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
         <div className="relative mb-3">
           <Input
             type="text"
-            placeholder="🔍 Escribe aquí para buscar un ingrediente (ej. harina, leche, aceite, pollo, azúcar, almendra...)"
+            placeholder={
+              isEn
+                ? "🔍 Type to search any ingredient in English or Spanish (e.g. flour, milk, olive oil, chicken, sugar, almond...)"
+                : "🔍 Escribe aquí para buscar un ingrediente (ej. harina, leche, aceite, pollo, azúcar, almendra...)"
+            }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-4 pr-10 h-11 text-sm font-medium border-2 border-primary"
@@ -423,7 +460,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           )}
         </div>
 
-        {/* Clickable Family Pills so user can browse effortlessly */}
+        {/* Clickable Family Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2">
           {categories.map((cat) => (
             <button
@@ -436,17 +473,23 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                   : "bg-white text-primary border-primary/25 hover:border-primary"
               }`}
             >
-              {cat === "all" ? `Todos (${allIngredients.length})` : cat}
+              {cat === "all"
+                ? isEn
+                  ? `All (${allIngredients.length})`
+                  : `Todos (${allIngredients.length})`
+                : cat}
             </button>
           ))}
         </div>
 
-        {/* Always-Visible Compact Ingredient Selector (5 rows height) */}
+        {/* Always-Visible Compact Ingredient Selector */}
         <div className="max-h-56 overflow-y-auto divide-y divide-primary/10 border-2 border-primary bg-white">
           {filteredIngredients.length === 0 ? (
             <div className="p-6 text-center space-y-2">
               <p className="font-mono text-xs text-neutral">
-                No hemos encontrado &ldquo;{searchQuery}&rdquo;.
+                {isEn
+                  ? `No ingredient found matching "${searchQuery}".`
+                  : `No hemos encontrado "${searchQuery}".`}
               </p>
               <Button
                 type="button"
@@ -458,12 +501,17 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 }}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
-                <span>Crear &ldquo;{searchQuery}&rdquo; como Ingrediente Nuevo</span>
+                <span>
+                  {isEn
+                    ? `Create "${searchQuery}" as Custom Ingredient`
+                    : `Crear "${searchQuery}" como Ingrediente Nuevo`}
+                </span>
               </Button>
             </div>
           ) : (
             filteredIngredients.map((ing) => {
               const wasJustAdded = justAddedId === ing.id;
+              const displayName = isEn ? ing.nameEn || ing.name : ing.name;
               return (
                 <div
                   key={ing.id}
@@ -472,11 +520,12 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-xs sm:text-sm text-primary">
-                        {ing.name}
+                        {displayName}
                       </span>
                       {ing.allergens.length > 0 && (
                         <span className="font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 bg-accent/15 text-accent border border-accent/30">
-                          ALÉRGENO: {ing.allergens.join(", ")}
+                          {isEn ? "ALLERGEN:" : "ALÉRGENO:"}{" "}
+                          {ing.allergens.join(", ")}
                         </span>
                       )}
                     </div>
@@ -484,7 +533,9 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                       <span>{ing.nutrients.energyKcal} kcal/100g</span>
                       <span>·</span>
                       <span>
-                        Grasas: {ing.nutrients.fat}g | Hidratos: {ing.nutrients.carbs}g | Prot: {ing.nutrients.protein}g
+                        {isEn
+                          ? `Fat: ${ing.nutrients.fat}g | Carbs: ${ing.nutrients.carbs}g | Prot: ${ing.nutrients.protein}g`
+                          : `Grasas: ${ing.nutrients.fat}g | Hidratos: ${ing.nutrients.carbs}g | Prot: ${ing.nutrients.protein}g`}
                       </span>
                     </div>
                   </div>
@@ -493,7 +544,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                     <input
                       type="number"
                       min="1"
-                      aria-label={`Gramos de ${ing.name}`}
+                      aria-label={`Grams of ${displayName}`}
                       value={quickAmounts[ing.id] ?? "100"}
                       onChange={(e) =>
                         setQuickAmounts({
@@ -518,12 +569,12 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                       {wasJustAdded ? (
                         <>
                           <Check className="w-3.5 h-3.5" />
-                          <span>¡Añadido!</span>
+                          <span>{isEn ? "Added!" : "¡Añadido!"}</span>
                         </>
                       ) : (
                         <>
                           <Plus className="w-3.5 h-3.5" />
-                          <span>Añadir</span>
+                          <span>{isEn ? "Add" : "Añadir"}</span>
                         </>
                       )}
                     </button>
@@ -540,10 +591,14 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-primary/15 pb-3 mb-3">
           <div>
             <h3 className="font-display text-xl font-bold text-primary">
-              Ingredientes en tu Receta ({recipeItems.length})
+              {isEn
+                ? `Ingredients in Your Recipe (${recipeItems.length})`
+                : `Ingredientes en tu Receta (${recipeItems.length})`}
             </h3>
             <p className="text-xs text-neutral">
-              Puedes cambiar los gramos de cualquier ingrediente aquí mismo y la etiqueta se recalcula al instante:
+              {isEn
+                ? "Edit grams below at any time — the nutrition label updates live:"
+                : "Puedes cambiar los gramos de cualquier ingrediente aquí mismo y la etiqueta se recalcula al instante:"}
             </p>
           </div>
 
@@ -555,12 +610,12 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 className="px-2.5 py-1 text-[11px] font-mono font-bold text-accent hover:bg-accent/10 border border-accent/40 flex items-center gap-1 cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
-                <span>Vaciar Receta</span>
+                <span>{isEn ? "Clear Recipe" : "Vaciar Receta"}</span>
               </button>
             )}
             <div className="text-right">
               <span className="font-mono text-[10px] text-neutral block">
-                PESO TOTAL RECETA
+                {isEn ? "TOTAL RAW WEIGHT" : "PESO TOTAL RECETA"}
               </span>
               <span className="font-mono text-lg font-extrabold text-primary">
                 {totalRawWeight} g
@@ -573,10 +628,20 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
           <div className="py-10 px-4 text-center border-2 border-dashed border-primary/30 bg-white">
             <Scale className="w-8 h-8 text-accent mx-auto mb-2" />
             <p className="font-display text-lg font-bold text-primary">
-              Tu receta está lista para empezar en blanco
+              {isEn
+                ? "Your recipe is ready to start from scratch"
+                : "Tu receta está lista para empezar en blanco"}
             </p>
             <p className="text-xs text-neutral mt-1 max-w-md mx-auto">
-              Haz clic en el botón naranja <strong>&ldquo;+ Añadir&rdquo;</strong> junto a cualquier ingrediente del cuadro de arriba para ir armando tu producto.
+              {isEn ? (
+                <>
+                  Click the orange <strong>&ldquo;+ Add&rdquo;</strong> button next to any ingredient above to build your product.
+                </>
+              ) : (
+                <>
+                  Haz clic en el botón naranja <strong>&ldquo;+ Añadir&rdquo;</strong> junto a cualquier ingrediente del cuadro de arriba para ir armando tu producto.
+                </>
+              )}
             </p>
           </div>
         ) : (
@@ -586,6 +651,9 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 totalRawWeight > 0
                   ? ((item.amountGrams / totalRawWeight) * 100).toFixed(1)
                   : "0";
+              const displayName = isEn
+                ? item.ingredient.nameEn || item.ingredient.name
+                : item.ingredient.name;
               return (
                 <div
                   key={`${item.ingredientId}-${index}`}
@@ -597,7 +665,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                         {String(index + 1).padStart(2, "0")}.
                       </span>
                       <span className="font-bold text-xs sm:text-sm text-primary truncate">
-                        {item.ingredient.name}
+                        {displayName}
                       </span>
                       {item.ingredient.allergens.length > 0 && (
                         <Badge variant="alert" className="text-[9px] px-1.5 py-0">
@@ -606,7 +674,8 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                       )}
                     </div>
                     <div className="font-mono text-[10px] text-neutral pl-6">
-                      {percentage}% de la receta · {item.ingredient.nutrients.energyKcal} kcal/100g
+                      {percentage}% {isEn ? "of batch" : "de la receta"} ·{" "}
+                      {item.ingredient.nutrients.energyKcal} kcal/100g
                     </div>
                   </div>
 
@@ -615,7 +684,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                       <input
                         type="number"
                         min="1"
-                        aria-label={`Gramos de ${item.ingredient.name}`}
+                        aria-label={`Grams of ${displayName}`}
                         value={item.amountGrams}
                         onChange={(e) =>
                           onUpdateAmount(index, parseFloat(e.target.value) || 0)
@@ -630,7 +699,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                     <button
                       type="button"
                       onClick={() => onRemoveItem(index)}
-                      aria-label={`Eliminar ${item.ingredient.name}`}
+                      aria-label={`Remove ${displayName}`}
                       className="p-1.5 text-neutral hover:text-accent transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -650,10 +719,12 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 htmlFor="merma-slider"
                 className="font-mono text-[11px] font-bold uppercase text-primary"
               >
-                ¿Pierde agua al cocinar/hornear?
+                {isEn
+                  ? "Cooking / Baking Moisture Loss:"
+                  : "¿Pierde agua al cocinar/hornear?"}
               </label>
               <span className="font-mono text-xs font-extrabold text-accent bg-accent/10 px-2 py-0.5 border border-accent/30">
-                -{evaporationPercent}% agua
+                -{evaporationPercent}% {isEn ? "water" : "agua"}
               </span>
             </div>
             <input
@@ -667,10 +738,10 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               className="w-full accent-[#D94E28] cursor-pointer h-1.5 bg-[#EAE5D9]"
             />
             <div className="flex justify-between font-mono text-[9px] text-neutral mt-1">
-              <span>0% Sin cocción</span>
-              <span>12% Horno</span>
-              <span>22% Mermelada</span>
-              <span>45% Secado</span>
+              <span>{isEn ? "0% Raw" : "0% Sin cocción"}</span>
+              <span>{isEn ? "12% Baked" : "12% Horno"}</span>
+              <span>{isEn ? "22% Jam" : "22% Mermelada"}</span>
+              <span>{isEn ? "45% Dried" : "45% Secado"}</span>
             </div>
           </div>
 
@@ -680,12 +751,15 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                 htmlFor="servings-input"
                 className="block font-mono text-[11px] font-bold uppercase text-primary"
               >
-                ¿Cuántas raciones salen?
+                {isEn ? "Servings per Package:" : "¿Cuántas raciones salen?"}
               </label>
               <span className="font-mono text-[10px] text-neutral">
                 {totalRawWeight > 0
-                  ? `Sale a ${((totalRawWeight * (1 - evaporationPercent / 100)) / servingsCount).toFixed(0)} g por ración`
-                  : "0 g / ración"}
+                  ? `${(
+                      (totalRawWeight * (1 - evaporationPercent / 100)) /
+                      servingsCount
+                    ).toFixed(0)} g / ${isEn ? "serving" : "ración"}`
+                  : `0 g / ${isEn ? "serving" : "ración"}`}
               </span>
             </div>
             <input
@@ -710,7 +784,11 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               onClick={onScrollToLabel}
               className="w-full h-12 bg-primary hover:bg-accent text-[#F6F3EC] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-tactile-sm cursor-pointer"
             >
-              <span>✓ Etiqueta Lista: Ir a Descargar (.PNG / .SVG)</span>
+              <span>
+                {isEn
+                  ? "✓ Label Ready: Go to Download (.PNG / .SVG)"
+                  : "✓ Etiqueta Lista: Ir a Descargar (.PNG / .SVG)"}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

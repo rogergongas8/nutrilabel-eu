@@ -117,6 +117,7 @@ export interface CalculationResult {
 
   // Lista ordenada de ingredientes por peso descendente (obligatorio por ley)
   ingredientsListFormatted: string;
+  ingredientsListFormattedEn?: string;
 
   // Justificación técnica para auditoría
   technicalAuditSheet: {
