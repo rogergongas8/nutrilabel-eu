@@ -41,6 +41,7 @@ export interface WineCalculationResult {
   ingredientsListEn: string;
   allergensEs: string[];
   eLabelUrl: string;
+  localELabelPath: string;
 }
 
 export function calculateWineNutrition(input: WineInput): WineCalculationResult {
@@ -74,13 +75,30 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
   if (input.containsEggAlbumin) allergensEs.push("Huevo (albúmina de clarificación)");
   if (input.containsMilkCasein) allergensEs.push("Leche (caseína de clarificación)");
 
-  const slug =
-    input.wineName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") || "vino-reserva";
+  const carbsRounded = Math.round(carbsPer100ml * 10) / 10;
+  const sugarsRounded = Math.round(sugarsPer100ml * 10) / 10;
 
-  const eLabelUrl = `https://elabel.nutrilabel.eu/v/${slug}-${input.vintageYear}?kj=${energyKj}&kcal=${energyKcal}&abv=${input.abvPercent}`;
+  const params = new URLSearchParams({
+    name: input.wineName,
+    year: input.vintageYear,
+    do: input.appellation,
+    abv: String(input.abvPercent),
+    kj: String(energyKj),
+    kcal: String(energyKcal),
+    carbs: String(carbsRounded),
+    sugars: String(sugarsRounded),
+    sulfites: input.containsSulfites ? "1" : "0",
+    egg: input.containsEggAlbumin ? "1" : "0",
+    milk: input.containsMilkCasein ? "1" : "0",
+    org: input.isOrganic ? "1" : "0",
+  });
+
+  const localELabelPath = `/elabel?${params.toString()}`;
+  const origin =
+    typeof window !== "undefined" && window.location?.origin
+      ? window.location.origin
+      : "https://nutrilabel-eu.vercel.app";
+  const eLabelUrl = `${origin}${localELabelPath}`;
 
   const sulfitesEs = input.containsSulfites
     ? ", conservador y antioxidante: **DIÓXIDO DE AZUFRE (SULFITOS) (E-220)**"
@@ -110,8 +128,8 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
       energyKcal,
       fat: 0,
       saturatedFat: 0,
-      carbs: Math.round(carbsPer100ml * 10) / 10,
-      sugars: Math.round(sugarsPer100ml * 10) / 10,
+      carbs: carbsRounded,
+      sugars: sugarsRounded,
       protein: 0,
       salt: 0,
       alcoholGrams: Math.round(alcoholGrams * 10) / 10,
@@ -122,5 +140,6 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
     ingredientsListEn,
     allergensEs,
     eLabelUrl,
+    localELabelPath,
   };
 }

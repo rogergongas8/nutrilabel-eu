@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Wine, Download, QrCode, ShieldCheck, CheckCircle2, Smartphone } from "lucide-react";
+import {
+  Wine,
+  Download,
+  CheckCircle2,
+  Smartphone,
+  ExternalLink,
+} from "lucide-react";
 import { calculateWineNutrition, WineInput } from "@/lib/wine-calculator";
 import { generateQRMatrix } from "@/lib/qr-encoder";
 import { Button } from "@/components/ui/button";
@@ -264,7 +270,7 @@ export const WineELabelStudio: React.FC = () => {
       </div>
 
       {/* Right 5 Cols: Physical Bottle Stamp + Scannable E-Label QR + Mobile Preview */}
-      <div className="lg:col-span-5 space-y-5">
+      <div className="lg:col-span-5 space-y-4">
         <div className="bg-white border-2 border-ink p-6 shadow-tactile crop-marks">
           <div className="flex items-center justify-between font-mono text-[10px] text-neutral border-b border-dashed border-ink/30 pb-2 mb-4">
             <span>CONTRAETIQUETA FÍSICA + QR E-LABEL</span>
@@ -380,13 +386,6 @@ export const WineELabelStudio: React.FC = () => {
                     </td>
                     <td className="py-1 text-right">{result.per100ml.sugars} g</td>
                   </tr>
-                  <tr>
-                    <td className="py-1 text-[11px] text-neutral" colSpan={2}>
-                      {previewLang === "es"
-                        ? "Contiene cantidades insignificantes de grasas, ácidos grasos saturados, proteínas y sal."
-                        : "Contains negligible amounts of fat, saturates, protein and salt."}
-                    </td>
-                  </tr>
                 </tbody>
               </table>
 
@@ -415,7 +414,7 @@ export const WineELabelStudio: React.FC = () => {
 
         <Button
           variant="accent"
-          size="lg"
+          size="md"
           onClick={handleDownloadWineSVG}
           className="w-full"
         >
@@ -423,10 +422,20 @@ export const WineELabelStudio: React.FC = () => {
           <span>Descargar Sello E + QR Vectorial (.SVG Imprenta)</span>
         </Button>
 
-        <div className="p-3 bg-surface border border-primary/30 text-xs text-primary flex items-center gap-2 font-mono">
+        <a
+          href={result.localELabelPath}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full h-11 px-4 bg-primary hover:bg-primary/90 text-[#F6F3EC] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-primary transition-colors"
+        >
+          <ExternalLink className="w-4 h-4 text-accent" />
+          <span>Abrir E-Label Pública Real (5 Idiomas UE)</span>
+        </a>
+
+        <div className="p-2.5 bg-surface border border-primary/30 text-[11px] text-primary flex items-center gap-2 font-mono">
           <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
           <span>
-            Sin cookies de rastreo ni scripts publicitarios conforme al Art. 119 Reglamento (UE) 1308/2013 modificado por (UE) 2021/2117.
+            E-Label pública 100% libre de cookies (Art. 119 Reglamento UE 1308/2013).
           </span>
         </div>
       </div>
