@@ -9,8 +9,9 @@ import {
   PlusCircle,
   X,
   Check,
-  ArrowRight,
   RotateCcw,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   Ingredient,
@@ -19,9 +20,6 @@ import {
   MANDATORY_EU_ALLERGENS,
 } from "@/types/nutrition";
 import { VERIFIED_INGREDIENTS } from "@/data/ingredients";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 
 interface RecipeBuilderProps {
   recipeItems: RecipeItem[];
@@ -33,7 +31,6 @@ interface RecipeBuilderProps {
   servingsCount: number;
   onUpdateServings: (val: number) => void;
   onStartBlank: () => void;
-  onScrollToLabel: () => void;
   lang?: "es" | "en";
 }
 
@@ -49,11 +46,11 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
   servingsCount,
   onUpdateServings,
   onStartBlank,
-  onScrollToLabel,
   lang = "es",
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [quickAmounts, setQuickAmounts] = useState<Record<string, string>>({});
   const [justAddedId, setJustAddedId] = useState<string | null>(null);
 
@@ -63,7 +60,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
   // Custom ingredient form state
   const [customName, setCustomName] = useState("");
-  const [customSupplier, setCustomSupplier] = useState("Supplier Spec Sheet");
+  const [customSupplier, setCustomSupplier] = useState("Ficha Proveedor");
   const [customKcal, setCustomKcal] = useState("250");
   const [customFat, setCustomFat] = useState("10");
   const [customSatFat, setCustomSatFat] = useState("2.5");
@@ -84,7 +81,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
         setCustomIngredients(JSON.parse(saved));
       }
     } catch {
-      // ignore storage errors
+      // ignore
     }
   }, []);
 
@@ -116,7 +113,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     if (isNaN(amount) || amount <= 0) return;
     onAddItem(ing, amount);
     setJustAddedId(ing.id);
-    setTimeout(() => setJustAddedId(null), 1200);
+    setTimeout(() => setJustAddedId(null), 1000);
   };
 
   const toggleCustomAllergen = (allergen: AllergenKey) => {
@@ -138,8 +135,8 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
       id: `custom-${Date.now()}`,
       name: customName.trim(),
       nameEn: customName.trim(),
-      category: "Custom (Supplier)",
-      source: customSupplier.trim() || "Supplier Spec Sheet",
+      category: "Personalizados",
+      source: customSupplier.trim() || "Ficha Proveedor",
       nutrients: {
         energyKj: kj,
         energyKcal: kcal,
@@ -175,72 +172,60 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
     0
   );
 
+  const showSearchResults =
+    searchQuery.trim().length > 0 || isCatalogOpen || selectedCategory !== "all";
+
   return (
-    <div className="space-y-6">
-      {/* PASO 2A: Buscador Claro y Directo para Añadir Ingredientes */}
-      <div className="bg-surface border-2 border-primary p-5 shadow-tactile-sm">
+    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-6">
+      {/* Header + Search Bar to Add Ingredients */}
+      <div>
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-primary text-[#F6F3EC] font-mono text-[10px] font-bold uppercase">
-                {isEn ? "STEP 2 OF 3" : "PASO 2 DE 3"}
-              </span>
-              <h3 className="font-display text-xl font-bold text-primary">
-                {isEn
-                  ? "Search & Add Your Ingredients"
-                  : "Busca y añade tus ingredientes"}
-              </h3>
-            </div>
-            <p className="text-xs text-neutral mt-1">
-              {isEn ? (
-                <>
-                  Choose from <strong>{allIngredients.length} official ingredients</strong>, enter grams, and click <strong>&ldquo;+ Add&rdquo;</strong>:
-                </>
-              ) : (
-                <>
-                  Elige entre <strong>{allIngredients.length} ingredientes oficiales</strong>, pon los gramos que usas y pulsa <strong>&ldquo;+ Añadir&rdquo;</strong>:
-                </>
-              )}
+            <h2 className="text-base font-bold text-stone-900">
+              {isEn ? "2. Recipe Ingredients" : "2. Ingredientes de tu receta"}
+            </h2>
+            <p className="text-xs text-stone-500">
+              {isEn
+                ? "Search and add ingredients below, or adjust their weight in grams."
+                : "Busca para añadir más ingredientes o ajusta los gramos de tu lista."}
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => setIsCustomModalOpen(!isCustomModalOpen)}
-            className="font-mono text-xs font-bold text-accent hover:text-primary flex items-center gap-1.5 bg-white px-3 py-2 border-2 border-primary/40 hover:border-primary transition-colors cursor-pointer"
+            className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-3.5 h-3.5" />
             <span>
-              {isEn
-                ? "+ Create Custom Ingredient"
-                : "¿No está tu ingrediente? Créalo aquí"}
+              {isEn ? "Create custom ingredient" : "Crear ingrediente propio"}
             </span>
           </button>
         </div>
 
-        {/* Custom Ingredient Drawer */}
+        {/* Soft Custom Ingredient Drawer */}
         {isCustomModalOpen && (
           <form
             onSubmit={handleSaveCustomIngredient}
-            className="mb-4 p-4 bg-[#EAE5D9] border-2 border-primary space-y-4"
+            className="mb-5 p-5 rounded-xl bg-stone-50 border border-stone-200 space-y-4"
           >
-            <div className="flex items-center justify-between border-b border-primary/20 pb-2">
+            <div className="flex items-center justify-between">
               <div>
-                <span className="font-mono text-[10px] font-bold uppercase text-accent">
+                <h4 className="text-sm font-bold text-stone-900">
                   {isEn
-                    ? "CREATE CUSTOM INGREDIENT (VALUES PER 100 G)"
-                    : "CREAR INGREDIENTE PERSONALIZADO (VALORES POR 100 G)"}
-                </span>
-                <p className="text-xs text-primary font-semibold">
+                    ? "New Custom Ingredient (per 100 g)"
+                    : "Nuevo ingrediente personalizado (valores por 100 g)"}
+                </h4>
+                <p className="text-xs text-stone-500">
                   {isEn
-                    ? "Enter the nutrition values per 100 g from your supplier's package or spec sheet:"
-                    : "Copia los datos nutricionales por cada 100 g del envase o ficha de tu proveedor:"}
+                    ? "Copy the nutrition values from your supplier's package:"
+                    : "Copia los datos de la etiqueta o ficha técnica de tu proveedor:"}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCustomModalOpen(false)}
-                className="p-1 text-primary hover:text-accent cursor-pointer"
+                className="p-1 text-stone-400 hover:text-stone-700 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -248,139 +233,96 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2">
-                <label className="block font-mono text-[11px] font-bold text-primary mb-1">
-                  {isEn ? "Ingredient Name *" : "Nombre del Ingrediente *"}
+                <label className="block text-xs font-medium text-stone-600 mb-1">
+                  {isEn ? "Ingredient Name *" : "Nombre del ingrediente *"}
                 </label>
                 <input
                   type="text"
                   required
                   placeholder={
-                    isEn
-                      ? "e.g. 70% Dark Chocolate Couverture"
-                      : "Ej. Chocolate Negro 70% Especial Obrador"
+                    isEn ? "e.g. 70% Dark Chocolate" : "Ej. Chocolate Negro 70%"
                   }
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-primary text-xs font-bold text-primary"
+                  className="w-full h-9 px-3 rounded-lg bg-white border border-stone-200 text-xs font-medium text-stone-900"
                 />
               </div>
               <div>
-                <label className="block font-mono text-[11px] font-bold text-primary mb-1">
-                  {isEn ? "Brand / Supplier" : "Marca / Proveedor"}
+                <label className="block text-xs font-medium text-stone-600 mb-1">
+                  {isEn ? "Brand / Source" : "Marca / Proveedor"}
                 </label>
                 <input
                   type="text"
                   value={customSupplier}
                   onChange={(e) => setCustomSupplier(e.target.value)}
-                  className="w-full h-9 px-3 bg-white border border-primary/40 font-mono text-xs text-primary"
+                  className="w-full h-9 px-3 rounded-lg bg-white border border-stone-200 text-xs text-stone-700"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Calories (kcal/100g)" : "Calorías (kcal/100g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customKcal}
-                  onChange={(e) => setCustomKcal(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Total Fat (g)" : "Grasas totales (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customFat}
-                  onChange={(e) => setCustomFat(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Saturates (g)" : "Saturadas (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customSatFat}
-                  onChange={(e) => setCustomSatFat(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Carbohydrates (g)" : "Hidratos carbono (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customCarbs}
-                  onChange={(e) => setCustomCarbs(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Sugars (g)" : "Azúcares (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customSugars}
-                  onChange={(e) => setCustomSugars(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Fiber (g)" : "Fibra (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customFiber}
-                  onChange={(e) => setCustomFiber(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Protein (g)" : "Proteínas (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={customProtein}
-                  onChange={(e) => setCustomProtein(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] font-bold text-primary">
-                  {isEn ? "Salt (g)" : "Sal (g)"}
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={customSalt}
-                  onChange={(e) => setCustomSalt(e.target.value)}
-                  className="w-full h-8 px-2 bg-white border border-primary/40 font-mono text-xs font-bold"
-                />
-              </div>
+              {[
+                {
+                  label: isEn ? "Calories (kcal)" : "Calorías (kcal)",
+                  val: customKcal,
+                  set: setCustomKcal,
+                },
+                {
+                  label: isEn ? "Fat (g)" : "Grasas (g)",
+                  val: customFat,
+                  set: setCustomFat,
+                },
+                {
+                  label: isEn ? "Saturates (g)" : "Saturadas (g)",
+                  val: customSatFat,
+                  set: setCustomSatFat,
+                },
+                {
+                  label: isEn ? "Carbs (g)" : "Hidratos (g)",
+                  val: customCarbs,
+                  set: setCustomCarbs,
+                },
+                {
+                  label: isEn ? "Sugars (g)" : "Azúcares (g)",
+                  val: customSugars,
+                  set: setCustomSugars,
+                },
+                {
+                  label: isEn ? "Fiber (g)" : "Fibra (g)",
+                  val: customFiber,
+                  set: setCustomFiber,
+                },
+                {
+                  label: isEn ? "Protein (g)" : "Proteínas (g)",
+                  val: customProtein,
+                  set: setCustomProtein,
+                },
+                {
+                  label: isEn ? "Salt (g)" : "Sal (g)",
+                  val: customSalt,
+                  set: setCustomSalt,
+                },
+              ].map((f, i) => (
+                <div key={i}>
+                  <label className="block text-[11px] font-medium text-stone-600 mb-0.5">
+                    {f.label}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={f.val}
+                    onChange={(e) => f.set(e.target.value)}
+                    className="w-full h-8 px-2.5 rounded-lg bg-white border border-stone-200 text-xs font-semibold text-stone-900"
+                  />
+                </div>
+              ))}
             </div>
 
             <div>
-              <label className="block font-mono text-[10px] font-bold uppercase text-primary mb-1.5">
+              <label className="block text-xs font-medium text-stone-600 mb-1.5">
                 {isEn
-                  ? "Contains any of the 14 mandatory EU allergens? (Click if applicable):"
-                  : "¿Contiene algún alérgeno obligatorio? (Pulsa si aplica):"}
+                  ? "Allergens present (optional):"
+                  : "Alérgenos que contiene (opcional):"}
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {(Object.keys(MANDATORY_EU_ALLERGENS) as AllergenKey[]).map(
@@ -394,10 +336,10 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                         key={key}
                         type="button"
                         onClick={() => toggleCustomAllergen(key)}
-                        className={`px-2 py-1 text-[10px] font-mono border transition-colors cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                           active
-                            ? "bg-accent text-white border-accent font-bold"
-                            : "bg-white text-primary border-primary/25 hover:border-primary"
+                            ? "bg-amber-600 text-white font-semibold"
+                            : "bg-white text-stone-600 border border-stone-200 hover:border-stone-300"
                         }`}
                       >
                         {active ? "✓ " : ""}
@@ -409,247 +351,251 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-primary/20">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-stone-200">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-primary">
-                  {isEn ? "Grams to add to recipe:" : "Gramos a añadir a la receta:"}
+                <span className="text-xs font-medium text-stone-600">
+                  {isEn ? "Grams to add:" : "Gramos a añadir:"}
                 </span>
                 <input
                   type="number"
                   min="1"
                   value={customWeightToAdd}
                   onChange={(e) => setCustomWeightToAdd(e.target.value)}
-                  className="w-20 h-9 px-2 bg-white border border-primary font-mono text-xs font-bold text-right"
+                  className="w-20 h-9 px-2.5 rounded-lg bg-white border border-stone-200 text-xs font-semibold text-right"
                 />
-                <span className="font-mono text-xs">g</span>
+                <span className="text-xs text-stone-500">g</span>
               </div>
 
-              <Button type="submit" variant="accent" size="sm">
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              >
                 <Check className="w-3.5 h-3.5" />
-                <span>
-                  {isEn ? "Save & Add to Recipe" : "Guardar y Añadir a Mi Receta"}
-                </span>
-              </Button>
+                <span>{isEn ? "Save & Add" : "Guardar y añadir"}</span>
+              </button>
             </div>
           </form>
         )}
 
-        {/* Search Input */}
-        <div className="relative mb-3">
-          <Input
-            type="text"
-            placeholder={
-              isEn
-                ? "🔍 Type to search any ingredient in English or Spanish (e.g. flour, milk, olive oil, chicken, sugar, almond...)"
-                : "🔍 Escribe aquí para buscar un ingrediente (ej. harina, leche, aceite, pollo, azúcar, almendra...)"
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-4 pr-10 h-11 text-sm font-medium border-2 border-primary"
-          />
-          {searchQuery ? (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3.5 top-3.5 text-neutral hover:text-primary cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          ) : (
-            <Search className="w-4 h-4 text-primary/60 absolute right-3.5 top-3.5" />
-          )}
-        </div>
-
-        {/* Clickable Family Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 text-[11px] font-mono font-bold whitespace-nowrap border transition-colors cursor-pointer ${
-                selectedCategory === cat
-                  ? "bg-primary text-[#F6F3EC] border-primary"
-                  : "bg-white text-primary border-primary/25 hover:border-primary"
-              }`}
-            >
-              {cat === "all"
-                ? isEn
-                  ? `All (${allIngredients.length})`
-                  : `Todos (${allIngredients.length})`
-                : cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Always-Visible Compact Ingredient Selector */}
-        <div className="max-h-56 overflow-y-auto divide-y divide-primary/10 border-2 border-primary bg-white">
-          {filteredIngredients.length === 0 ? (
-            <div className="p-6 text-center space-y-2">
-              <p className="font-mono text-xs text-neutral">
-                {isEn
-                  ? `No ingredient found matching "${searchQuery}".`
-                  : `No hemos encontrado "${searchQuery}".`}
-              </p>
-              <Button
-                type="button"
-                variant="accent"
-                size="sm"
-                onClick={() => {
-                  setCustomName(searchQuery);
-                  setIsCustomModalOpen(true);
-                }}
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>
-                  {isEn
-                    ? `Create "${searchQuery}" as Custom Ingredient`
-                    : `Crear "${searchQuery}" como Ingrediente Nuevo`}
-                </span>
-              </Button>
-            </div>
-          ) : (
-            filteredIngredients.map((ing) => {
-              const wasJustAdded = justAddedId === ing.id;
-              const displayName = isEn ? ing.nameEn || ing.name : ing.name;
-              return (
-                <div
-                  key={ing.id}
-                  className="p-2.5 px-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-[#F6F3EC]"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-bold text-xs sm:text-sm text-primary">
-                        {displayName}
-                      </span>
-                      {ing.allergens.length > 0 && (
-                        <span className="font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 bg-accent/15 text-accent border border-accent/30">
-                          {isEn ? "ALLERGEN:" : "ALÉRGENO:"}{" "}
-                          {ing.allergens.join(", ")}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-2 text-[10px] font-mono text-neutral mt-0.5">
-                      <span>{ing.nutrients.energyKcal} kcal/100g</span>
-                      <span>·</span>
-                      <span>
-                        {isEn
-                          ? `Fat: ${ing.nutrients.fat}g | Carbs: ${ing.nutrients.carbs}g | Prot: ${ing.nutrients.protein}g`
-                          : `Grasas: ${ing.nutrients.fat}g | Hidratos: ${ing.nutrients.carbs}g | Prot: ${ing.nutrients.protein}g`}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <input
-                      type="number"
-                      min="1"
-                      aria-label={`Grams of ${displayName}`}
-                      value={quickAmounts[ing.id] ?? "100"}
-                      onChange={(e) =>
-                        setQuickAmounts({
-                          ...quickAmounts,
-                          [ing.id]: e.target.value,
-                        })
-                      }
-                      className="w-20 h-8 px-2 bg-[#F6F3EC] border border-primary/50 font-mono text-xs font-bold text-right"
-                    />
-                    <span className="font-mono text-xs font-bold text-primary">
-                      g
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd(ing)}
-                      className={`h-8 px-3 font-mono text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
-                        wasJustAdded
-                          ? "bg-emerald-700 text-white"
-                          : "bg-accent hover:bg-primary text-white"
-                      }`}
-                    >
-                      {wasJustAdded ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" />
-                          <span>{isEn ? "Added!" : "¡Añadido!"}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>{isEn ? "Add" : "Añadir"}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {/* PASO 2B: Tu Receta Activa + Botón de Generar/Ver Etiqueta */}
-      <div className="bg-surface border-2 border-primary p-5 shadow-tactile-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-primary/15 pb-3 mb-3">
-          <div>
-            <h3 className="font-display text-xl font-bold text-primary">
-              {isEn
-                ? `Ingredients in Your Recipe (${recipeItems.length})`
-                : `Ingredientes en tu Receta (${recipeItems.length})`}
-            </h3>
-            <p className="text-xs text-neutral">
-              {isEn
-                ? "Edit grams below at any time — the nutrition label updates live:"
-                : "Puedes cambiar los gramos de cualquier ingrediente aquí mismo y la etiqueta se recalcula al instante:"}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {recipeItems.length > 0 && (
+        {/* Search Input + Toggle Catalog Button */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
+            <input
+              type="text"
+              placeholder={
+                isEn
+                  ? "Search 158+ ingredients to add (e.g. flour, milk, olive oil, chicken...)"
+                  : "Buscar ingrediente para añadir (ej. harina, leche, aceite, pollo, azúcar...)"
+              }
+              value={searchQuery}
+              onFocus={() => setIsCatalogOpen(true)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsCatalogOpen(true);
+              }}
+              className="w-full h-11 pl-10 pr-9 rounded-xl bg-stone-50/80 border border-stone-200 focus:bg-white focus:border-emerald-700 focus:outline-none text-sm text-stone-800 transition-all"
+            />
+            {searchQuery && (
               <button
                 type="button"
-                onClick={onStartBlank}
-                className="px-2.5 py-1 text-[11px] font-mono font-bold text-accent hover:bg-accent/10 border border-accent/40 flex items-center gap-1 cursor-pointer"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-3.5 text-stone-400 hover:text-stone-700 cursor-pointer"
               >
-                <RotateCcw className="w-3 h-3" />
-                <span>{isEn ? "Clear Recipe" : "Vaciar Receta"}</span>
+                <X className="w-4 h-4" />
               </button>
             )}
-            <div className="text-right">
-              <span className="font-mono text-[10px] text-neutral block">
-                {isEn ? "TOTAL RAW WEIGHT" : "PESO TOTAL RECETA"}
-              </span>
-              <span className="font-mono text-lg font-extrabold text-primary">
-                {totalRawWeight} g
-              </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsCatalogOpen(!isCatalogOpen)}
+            className="h-11 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-700 text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+          >
+            <span>
+              {isCatalogOpen
+                ? isEn
+                  ? "Hide catalog"
+                  : "Ocultar catálogo"
+                : isEn
+                ? `Browse all (${allIngredients.length})`
+                : `Ver catálogo (${allIngredients.length})`}
+            </span>
+            {isCatalogOpen ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+
+        {/* Collapsible Search Results & Category Pills */}
+        {showSearchResults && (
+          <div className="mt-3 p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/90 space-y-3">
+            {/* Soft Category Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-emerald-900 text-white shadow-xs"
+                      : "bg-white text-stone-600 border border-stone-200/80 hover:border-stone-300"
+                  }`}
+                >
+                  {cat === "all"
+                    ? isEn
+                      ? `All (${allIngredients.length})`
+                      : `Todos (${allIngredients.length})`
+                    : cat}
+                </button>
+              ))}
+            </div>
+
+            <div className="max-h-56 overflow-y-auto divide-y divide-stone-100 rounded-xl bg-white border border-stone-200/80">
+              {filteredIngredients.length === 0 ? (
+                <div className="p-6 text-center space-y-2">
+                  <p className="text-xs text-stone-500">
+                    {isEn
+                      ? `No ingredient found matching "${searchQuery}".`
+                      : `No hemos encontrado "${searchQuery}".`}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomName(searchQuery);
+                      setIsCustomModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-900 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>
+                      {isEn
+                        ? `Create "${searchQuery}"`
+                        : `Crear "${searchQuery}" como ingrediente propio`}
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                filteredIngredients.map((ing) => {
+                  const wasJustAdded = justAddedId === ing.id;
+                  const displayName = isEn ? ing.nameEn || ing.name : ing.name;
+                  return (
+                    <div
+                      key={ing.id}
+                      className="p-2.5 px-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-stone-50/80 transition-colors"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-xs sm:text-sm text-stone-800">
+                            {displayName}
+                          </span>
+                          {ing.allergens.length > 0 && (
+                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/70">
+                              {ing.allergens.join(", ")}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-stone-400 mt-0.5">
+                          {ing.nutrients.energyKcal} kcal/100g ·{" "}
+                          {isEn
+                            ? `Fat ${ing.nutrients.fat}g · Carbs ${ing.nutrients.carbs}g · Prot ${ing.nutrients.protein}g`
+                            : `Grasas ${ing.nutrients.fat}g · Hidratos ${ing.nutrients.carbs}g · Prot ${ing.nutrients.protein}g`}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <input
+                          type="number"
+                          min="1"
+                          aria-label={`Grams of ${displayName}`}
+                          value={quickAmounts[ing.id] ?? "100"}
+                          onChange={(e) =>
+                            setQuickAmounts({
+                              ...quickAmounts,
+                              [ing.id]: e.target.value,
+                            })
+                          }
+                          className="w-18 h-8 px-2 rounded-lg bg-stone-50 border border-stone-200 text-xs font-semibold text-right text-stone-800"
+                        />
+                        <span className="text-xs text-stone-400">g</span>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickAdd(ing)}
+                          className={`h-8 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                            wasJustAdded
+                              ? "bg-emerald-600 text-white"
+                              : "bg-emerald-900 hover:bg-emerald-800 text-white"
+                          }`}
+                        >
+                          {wasJustAdded ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>{isEn ? "Added" : "Añadido"}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>{isEn ? "Add" : "Añadir"}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <hr className="border-stone-100" />
+
+      {/* Active Recipe Items List */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-semibold text-stone-500">
+            {isEn
+              ? `Added Ingredients (${recipeItems.length}) — Total: ${totalRawWeight} g`
+              : `Ingredientes añadidos (${recipeItems.length}) — Peso total: ${totalRawWeight} g`}
+          </span>
+
+          {recipeItems.length > 0 && (
+            <button
+              type="button"
+              onClick={onStartBlank}
+              className="text-xs text-stone-400 hover:text-rose-600 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>{isEn ? "Clear all" : "Vaciar lista"}</span>
+            </button>
+          )}
         </div>
 
         {recipeItems.length === 0 ? (
-          <div className="py-10 px-4 text-center border-2 border-dashed border-primary/30 bg-white">
-            <Scale className="w-8 h-8 text-accent mx-auto mb-2" />
-            <p className="font-display text-lg font-bold text-primary">
+          <div className="py-10 px-4 text-center rounded-xl border border-dashed border-stone-200 bg-stone-50/50">
+            <Scale className="w-7 h-7 text-stone-400 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-stone-700">
               {isEn
-                ? "Your recipe is ready to start from scratch"
-                : "Tu receta está lista para empezar en blanco"}
+                ? "Your recipe is empty"
+                : "Tu lista de ingredientes está vacía"}
             </p>
-            <p className="text-xs text-neutral mt-1 max-w-md mx-auto">
-              {isEn ? (
-                <>
-                  Click the orange <strong>&ldquo;+ Add&rdquo;</strong> button next to any ingredient above to build your product.
-                </>
-              ) : (
-                <>
-                  Haz clic en el botón naranja <strong>&ldquo;+ Añadir&rdquo;</strong> junto a cualquier ingrediente del cuadro de arriba para ir armando tu producto.
-                </>
-              )}
+            <p className="text-xs text-stone-500 mt-0.5">
+              {isEn
+                ? "Use the search bar above to add your first ingredient."
+                : "Usa el buscador de arriba para ir añadiendo los ingredientes de tu producto."}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-primary/10 bg-white border border-primary/20 px-3">
+          <div className="divide-y divide-stone-100 rounded-xl border border-stone-200/70 bg-stone-50/30 px-3.5">
             {recipeItems.map((item, index) => {
               const percentage =
                 totalRawWeight > 0
-                  ? ((item.amountGrams / totalRawWeight) * 100).toFixed(1)
+                  ? ((item.amountGrams / totalRawWeight) * 100).toFixed(0)
                   : "0";
               const displayName = isEn
                 ? item.ingredient.nameEn || item.ingredient.name
@@ -657,26 +603,22 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
               return (
                 <div
                   key={`${item.ingredientId}-${index}`}
-                  className="py-2.5 flex items-center justify-between gap-3"
+                  className="py-3 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-[11px] font-bold text-neutral">
-                        {String(index + 1).padStart(2, "0")}.
-                      </span>
-                      <span className="font-bold text-xs sm:text-sm text-primary truncate">
+                      <span className="font-semibold text-sm text-stone-800 truncate">
                         {displayName}
                       </span>
                       {item.ingredient.allergens.length > 0 && (
-                        <Badge variant="alert" className="text-[9px] px-1.5 py-0">
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60">
                           {item.ingredient.allergens.join(", ")}
-                        </Badge>
+                        </span>
                       )}
                     </div>
-                    <div className="font-mono text-[10px] text-neutral pl-6">
-                      {percentage}% {isEn ? "of batch" : "de la receta"} ·{" "}
-                      {item.ingredient.nutrients.energyKcal} kcal/100g
-                    </div>
+                    <span className="text-xs text-stone-400">
+                      {percentage}% · {item.ingredient.nutrients.energyKcal} kcal/100g
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
@@ -689,9 +631,9 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                         onChange={(e) =>
                           onUpdateAmount(index, parseFloat(e.target.value) || 0)
                         }
-                        className="w-20 py-1 pl-2 pr-6 bg-[#F6F3EC] border border-primary/40 focus:border-primary font-mono text-xs font-bold text-primary text-right focus:outline-none"
+                        className="w-22 h-9 pl-2.5 pr-6 rounded-lg bg-white border border-stone-200 focus:border-emerald-700 text-xs font-semibold text-stone-900 text-right focus:outline-none"
                       />
-                      <span className="absolute right-2 top-1.5 font-mono text-[10px] text-neutral">
+                      <span className="absolute right-2.5 top-2.5 text-xs text-stone-400">
                         g
                       </span>
                     </div>
@@ -700,7 +642,7 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
                       type="button"
                       onClick={() => onRemoveItem(index)}
                       aria-label={`Remove ${displayName}`}
-                      className="p-1.5 text-neutral hover:text-accent transition-colors cursor-pointer"
+                      className="p-1.5 text-stone-400 hover:text-rose-600 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -710,89 +652,68 @@ export const RecipeBuilder: React.FC<RecipeBuilderProps> = ({
             })}
           </div>
         )}
+      </div>
 
-        {/* Merma & Raciones */}
-        <div className="mt-4 pt-4 border-t-2 border-primary/15 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-3 bg-white border border-primary/20">
-            <div className="flex items-center justify-between mb-1.5">
-              <label
-                htmlFor="merma-slider"
-                className="font-mono text-[11px] font-bold uppercase text-primary"
-              >
-                {isEn
-                  ? "Cooking / Baking Moisture Loss:"
-                  : "¿Pierde agua al cocinar/hornear?"}
-              </label>
-              <span className="font-mono text-xs font-extrabold text-accent bg-accent/10 px-2 py-0.5 border border-accent/30">
-                -{evaporationPercent}% {isEn ? "water" : "agua"}
-              </span>
-            </div>
-            <input
-              id="merma-slider"
-              type="range"
-              min="0"
-              max="50"
-              step="1"
-              value={evaporationPercent}
-              onChange={(e) => onUpdateEvaporation(parseInt(e.target.value, 10))}
-              className="w-full accent-[#D94E28] cursor-pointer h-1.5 bg-[#EAE5D9]"
-            />
-            <div className="flex justify-between font-mono text-[9px] text-neutral mt-1">
-              <span>{isEn ? "0% Raw" : "0% Sin cocción"}</span>
-              <span>{isEn ? "12% Baked" : "12% Horno"}</span>
-              <span>{isEn ? "22% Jam" : "22% Mermelada"}</span>
-              <span>{isEn ? "45% Dried" : "45% Secado"}</span>
-            </div>
+      {/* Soft Cooking Loss & Servings Controls */}
+      <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="p-4 rounded-xl bg-stone-50/70 border border-stone-200/70">
+          <div className="flex items-center justify-between mb-2">
+            <label
+              htmlFor="merma-slider"
+              className="text-xs font-semibold text-stone-700"
+            >
+              {isEn ? "Water loss in cooking/baking" : "Pérdida de agua al cocinar"}
+            </label>
+            <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+              -{evaporationPercent}%
+            </span>
           </div>
-
-          <div className="p-3 bg-white border border-primary/20 flex items-center justify-between gap-3">
-            <div>
-              <label
-                htmlFor="servings-input"
-                className="block font-mono text-[11px] font-bold uppercase text-primary"
-              >
-                {isEn ? "Servings per Package:" : "¿Cuántas raciones salen?"}
-              </label>
-              <span className="font-mono text-[10px] text-neutral">
-                {totalRawWeight > 0
-                  ? `${(
-                      (totalRawWeight * (1 - evaporationPercent / 100)) /
-                      servingsCount
-                    ).toFixed(0)} g / ${isEn ? "serving" : "ración"}`
-                  : `0 g / ${isEn ? "serving" : "ración"}`}
-              </span>
-            </div>
-            <input
-              id="servings-input"
-              type="number"
-              min="1"
-              max="500"
-              value={servingsCount}
-              onChange={(e) =>
-                onUpdateServings(Math.max(1, parseInt(e.target.value, 10) || 1))
-              }
-              className="w-20 h-9 px-2.5 bg-[#F6F3EC] border-2 border-primary font-mono text-sm font-bold text-primary text-center focus:outline-none"
-            />
+          <input
+            id="merma-slider"
+            type="range"
+            min="0"
+            max="50"
+            step="1"
+            value={evaporationPercent}
+            onChange={(e) => onUpdateEvaporation(parseInt(e.target.value, 10))}
+            className="w-full accent-emerald-800 cursor-pointer h-1.5 bg-stone-200 rounded-lg"
+          />
+          <div className="flex justify-between text-[10px] text-stone-400 mt-1.5">
+            <span>{isEn ? "0% Raw" : "0% Crudo"}</span>
+            <span>{isEn ? "12% Baked" : "12% Horno"}</span>
+            <span>{isEn ? "22% Jam" : "22% Cocción"}</span>
           </div>
         </div>
 
-        {/* Big Clear Action Button to Jump to / Highlight the Generated Label */}
-        {recipeItems.length > 0 && (
-          <div className="mt-5 pt-4 border-t-2 border-primary">
-            <button
-              type="button"
-              onClick={onScrollToLabel}
-              className="w-full h-12 bg-primary hover:bg-accent text-[#F6F3EC] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-tactile-sm cursor-pointer"
+        <div className="p-4 rounded-xl bg-stone-50/70 border border-stone-200/70 flex items-center justify-between gap-3">
+          <div>
+            <label
+              htmlFor="servings-input"
+              className="block text-xs font-semibold text-stone-700"
             >
-              <span>
-                {isEn
-                  ? "✓ Label Ready: Go to Download (.PNG / .SVG)"
-                  : "✓ Etiqueta Lista: Ir a Descargar (.PNG / .SVG)"}
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              {isEn ? "Servings per package" : "Raciones por envase"}
+            </label>
+            <span className="text-xs text-stone-400">
+              {totalRawWeight > 0
+                ? `${(
+                    (totalRawWeight * (1 - evaporationPercent / 100)) /
+                    servingsCount
+                  ).toFixed(0)} g / ${isEn ? "serving" : "ración"}`
+                : `0 g / ${isEn ? "serving" : "ración"}`}
+            </span>
           </div>
-        )}
+          <input
+            id="servings-input"
+            type="number"
+            min="1"
+            max="500"
+            value={servingsCount}
+            onChange={(e) =>
+              onUpdateServings(Math.max(1, parseInt(e.target.value, 10) || 1))
+            }
+            className="w-20 h-9 px-2.5 rounded-lg bg-white border border-stone-200 text-sm font-semibold text-stone-900 text-center focus:border-emerald-700 focus:outline-none"
+          />
+        </div>
       </div>
     </div>
   );

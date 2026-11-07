@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Download, Shield, CheckCircle2, FileCheck, Image as ImageIcon } from "lucide-react";
+import { Download, FileCheck, Image as ImageIcon } from "lucide-react";
 import { CalculationResult } from "@/types/nutrition";
 import { formatNutrientDisplay } from "@/lib/calculator";
-import { Button } from "@/components/ui/button";
 
 interface NutritionLabelProps {
   calculation: CalculationResult | null;
@@ -15,7 +14,6 @@ interface NutritionLabelProps {
 
 export const NutritionLabel: React.FC<NutritionLabelProps> = ({
   calculation,
-  onOpenAuditSheet,
   productName = "Producto Alimentario Artesanal",
   lang = "es",
 }) => {
@@ -27,17 +25,17 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
 
   if (!calculation) {
     return (
-      <div className="bg-surface border-2 border-primary p-8 text-center shadow-tactile">
-        <div className="w-12 h-12 bg-primary text-[#F6F3EC] flex items-center justify-center mx-auto mb-4">
-          <FileCheck className="w-6 h-6" />
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-10 text-center">
+        <div className="w-11 h-11 rounded-xl bg-stone-100 text-stone-500 flex items-center justify-center mx-auto mb-3">
+          <FileCheck className="w-5 h-5" />
         </div>
-        <h3 className="font-display text-xl font-bold text-primary">
-          {lang === "en" ? "Print Proof Waiting" : "Pliego de Impresión en Espera"}
+        <h3 className="text-base font-bold text-stone-800">
+          {lang === "en" ? "Your label will appear here" : "Tu etiqueta aparecerá aquí"}
         </h3>
-        <p className="text-xs text-neutral mt-2 max-w-xs mx-auto">
+        <p className="text-xs text-stone-500 mt-1 max-w-xs mx-auto">
           {lang === "en"
-            ? "Add at least one ingredient in Step 2 to generate your official EU 1169/2011 or US FDA nutrition label."
-            : "Incorpora al menos un ingrediente en el Paso 2 para renderizar tu etiqueta oficial según el Reglamento (UE) 1169/2011."}
+            ? "Add at least one ingredient on the left to generate your nutrition label."
+            : "Añade al menos un ingrediente a la izquierda para generar la tabla nutricional."}
         </p>
       </div>
     );
@@ -197,190 +195,175 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     : calculation.ingredientsListFormatted;
 
   return (
-    <div className="space-y-4">
-      {/* Jurisdiction Switcher Bar */}
-      <div className="bg-surface border-2 border-primary p-2.5 flex items-center justify-between">
-        <span className="font-mono text-xs font-bold uppercase tracking-wider text-primary pl-1">
-          {lang === "en" ? "Label Standard:" : "Normativa de Etiqueta:"}
+    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-5">
+      {/* Soft Format Switcher */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-stone-500">
+          {lang === "en" ? "Format" : "Formato normativo"}
         </span>
 
-        <div className="flex border border-primary bg-[#EAE5D9] p-0.5 font-mono text-xs font-bold">
+        <div className="flex rounded-lg bg-stone-100 p-0.5 text-xs font-semibold">
           <button
             type="button"
             onClick={() => setStandard("EU")}
-            className={`px-3 py-1 transition-colors cursor-pointer ${
+            className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
               standard === "EU"
-                ? "bg-primary text-[#F6F3EC]"
-                : "text-primary hover:bg-primary/10"
+                ? "bg-white text-stone-900 shadow-xs"
+                : "text-stone-500 hover:text-stone-900"
             }`}
           >
-            EU / UK 1169/2011
+            {lang === "en" ? "Europe / UK" : "Europa (UE)"}
           </button>
           <button
             type="button"
             onClick={() => setStandard("FDA")}
-            className={`px-3 py-1 transition-colors cursor-pointer ${
+            className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
               standard === "FDA"
-                ? "bg-primary text-[#F6F3EC]"
-                : "text-primary hover:bg-primary/10"
+                ? "bg-white text-stone-900 shadow-xs"
+                : "text-stone-500 hover:text-stone-900"
             }`}
           >
-            USA FDA 21 CFR
+            USA (FDA)
           </button>
         </div>
       </div>
 
-      {/* Print Proof Container with Crop Marks */}
+      {/* Clean Label Box */}
       <div
         ref={labelRef}
-        className="bg-white border-2 border-ink p-5 shadow-tactile relative crop-marks"
+        className="bg-white rounded-xl border border-stone-300 p-5"
       >
-        <div className="flex items-center justify-between font-mono text-[10px] text-neutral border-b border-dashed border-ink/30 pb-2 mb-3">
-          <span>
-            {isEn
-              ? "PRINT PROOF · X-HEIGHT ≥ 1.2 mm"
-              : "ARTE FINAL IMPRENTA · ALTURA x ≥ 1,2 mm"}
-          </span>
-          <span>
-            {isEn ? "NET BATCH:" : "PESO NETO LOTE:"}{" "}
-            {calculation.finishedWeightGrams.toFixed(0)} g
-          </span>
-        </div>
-
-        <div className="border-b-4 border-ink pb-2 mb-2">
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-lg font-black tracking-tight text-ink uppercase font-sans">
-              {standard === "FDA"
-                ? "Nutrition Facts"
-                : isEn
-                ? "Nutrition Declaration"
-                : "Información Nutricional"}
-            </h3>
-            <span className="font-mono text-[10px] font-bold text-ink">
-              {standard === "EU" ? "ANNEX XV EU/UK" : "FDA 21 CFR"}
-            </span>
-          </div>
-          <p className="text-xs text-ink/80 font-sans">
-            {isEn ? "Serving size:" : "Ración declarada:"}{" "}
-            <strong className="font-bold text-ink">{servingSizeGrams} g</strong> (
-            {calculation.servingsCount}{" "}
-            {isEn ? "servings per container" : "raciones por envase"})
+        <div className="border-b-2 border-stone-900 pb-2.5 mb-2">
+          <h3 className="text-base font-extrabold tracking-tight text-stone-900 uppercase">
+            {standard === "FDA"
+              ? "Nutrition Facts"
+              : isEn
+              ? "Nutrition Declaration"
+              : "Información Nutricional"}
+          </h3>
+          <p className="text-xs text-stone-500 mt-0.5">
+            {isEn ? "Serving size:" : "Tamaño de ración:"}{" "}
+            <strong className="font-semibold text-stone-800">
+              {servingSizeGrams} g
+            </strong>{" "}
+            ({calculation.servingsCount}{" "}
+            {isEn ? "servings" : "raciones por envase"})
           </p>
         </div>
 
-        {/* Official Mandatory Nutrient Table */}
+        {/* Nutrient Table */}
         <div className="overflow-x-auto">
-          <table className="nutrition-table-official text-ink">
+          <table className="nutrition-table-official text-stone-900">
             <thead>
-              <tr className="border-b-2 border-ink text-left text-xs font-black">
-                <th className="py-1.5 px-1">
+              <tr className="text-left text-xs font-bold text-stone-700">
+                <th className="py-2 px-1">
                   {isEn ? "Typical values" : "Valores medios"}
                 </th>
-                <th className="py-1.5 px-1 text-right">
+                <th className="py-2 px-1 text-right">
                   {isEn ? "Per 100 g" : "Por 100 g"}
                 </th>
-                <th className="py-1.5 px-1 text-right">
+                <th className="py-2 px-1 text-right">
                   {isEn ? `Per ${servingSizeGrams} g` : `Por ${servingSizeGrams} g`}
                 </th>
-                <th className="py-1.5 px-1 text-right">
+                <th className="py-2 px-1 text-right">
                   {isEn ? "% RI*" : "% IR*"}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-ink/30 font-sans text-xs">
-              <tr className="font-bold">
-                <td className="py-1.5 px-1">
+            <tbody className="text-xs">
+              <tr className="font-semibold">
+                <td className="py-2 px-1">
                   {isEn ? "Energy" : "Valor energético"}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {per100g.energyKj} kJ / {per100g.energyKcal} kcal
                 </td>
-                <td className="py-1.5 px-1 text-right">
-                  {perServing.energyKj} kJ / {perServing.energyKcal} kcal
+                <td className="py-2 px-1 text-right">
+                  {perServing.energyKcal} kcal
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right text-stone-500">
                   {referenceIntakePercent.energy}%
                 </td>
               </tr>
 
-              <tr className="font-bold">
-                <td className="py-1.5 px-1">{isEn ? "Fat" : "Grasas"}</td>
-                <td className="py-1.5 px-1 text-right">
+              <tr className="font-semibold">
+                <td className="py-2 px-1">{isEn ? "Fat" : "Grasas"}</td>
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(per100g.fat, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.fat, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right text-stone-500">
                   {referenceIntakePercent.fat}%
                 </td>
               </tr>
-              <tr className="text-ink/80">
-                <td className="py-1 px-1 pl-4">
+              <tr className="text-stone-500">
+                <td className="py-1.5 px-1 pl-4">
                   {isEn ? "of which saturates" : "de las cuales saturadas"}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.saturatedFat, "saturated")}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(perServing.saturatedFat, "saturated")}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {referenceIntakePercent.saturatedFat}%
                 </td>
               </tr>
 
-              <tr className="font-bold">
-                <td className="py-1.5 px-1">
+              <tr className="font-semibold">
+                <td className="py-2 px-1">
                   {isEn ? "Carbohydrate" : "Hidratos de carbono"}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(per100g.carbs, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.carbs, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right text-stone-500">
                   {referenceIntakePercent.carbs}%
                 </td>
               </tr>
-              <tr className="text-ink/80">
-                <td className="py-1 px-1 pl-4">
+              <tr className="text-stone-500">
+                <td className="py-1.5 px-1 pl-4">
                   {isEn ? "of which sugars" : "de los cuales azúcares"}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(per100g.sugars, "macro")}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {formatNutrientDisplay(perServing.sugars, "macro")}
                 </td>
-                <td className="py-1 px-1 text-right">
+                <td className="py-1.5 px-1 text-right">
                   {referenceIntakePercent.sugars}%
                 </td>
               </tr>
 
-              <tr className="font-bold">
-                <td className="py-1.5 px-1">{isEn ? "Protein" : "Proteínas"}</td>
-                <td className="py-1.5 px-1 text-right">
+              <tr className="font-semibold">
+                <td className="py-2 px-1">{isEn ? "Protein" : "Proteínas"}</td>
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(per100g.protein, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.protein, "macro")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right text-stone-500">
                   {referenceIntakePercent.protein}%
                 </td>
               </tr>
 
-              <tr className="font-bold border-b-2 border-ink">
-                <td className="py-1.5 px-1">{isEn ? "Salt" : "Sal"}</td>
-                <td className="py-1.5 px-1 text-right">
+              <tr className="font-semibold">
+                <td className="py-2 px-1">{isEn ? "Salt" : "Sal"}</td>
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(per100g.salt, "salt")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right">
                   {formatNutrientDisplay(perServing.salt, "salt")}
                 </td>
-                <td className="py-1.5 px-1 text-right">
+                <td className="py-2 px-1 text-right text-stone-500">
                   {referenceIntakePercent.salt}%
                 </td>
               </tr>
@@ -388,26 +371,21 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           </table>
         </div>
 
-        <p className="mt-2 text-[10px] text-ink/70 leading-snug font-sans">
+        <p className="mt-2.5 text-[11px] text-stone-400 leading-snug">
           {isEn
-            ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal) per Annex XIII Regulation (EU) No 1169/2011."
-            : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal) conforme al Anexo XIII del Reglamento (UE) Nº 1169/2011."}
+            ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal)."
+            : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)."}
         </p>
 
-        {/* Mandatory Ingredients & Allergen Typography Box */}
-        <div className="mt-3 pt-3 border-t-2 border-ink">
-          <p className="font-sans text-[11px] font-black uppercase tracking-wide text-ink">
-            {isEn
-              ? "INGREDIENTS (DESCENDING WEIGHT ORDER ART. 18 & 21):"
-              : "INGREDIENTES (ORDEN PONDERADO ART. 18 Y 21 UE):"}
+        {/* Ingredients & Allergens */}
+        <div className="mt-4 pt-3.5 border-t border-stone-200">
+          <p className="text-xs font-bold text-stone-800">
+            {isEn ? "Ingredients:" : "Ingredientes:"}
           </p>
-          <p className="mt-1 text-xs text-ink leading-relaxed font-sans">
+          <p className="mt-1 text-xs text-stone-600 leading-relaxed">
             {displayedIngredientList.split("**").map((chunk, i) =>
               i % 2 === 1 ? (
-                <strong
-                  key={i}
-                  className="font-black text-ink underline decoration-2"
-                >
+                <strong key={i} className="font-bold text-stone-900 underline">
                   {chunk}
                 </strong>
               ) : (
@@ -417,74 +395,37 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           </p>
 
           {allergens.length > 0 && (
-            <div className="mt-2.5 p-2 bg-[#F6F3EC] border-l-4 border-accent text-xs text-primary font-mono">
-              <strong className="text-accent uppercase block text-[10px]">
-                {isEn
-                  ? "ALLERGEN DECLARATION (ANNEX II EU):"
-                  : "DECLARACIÓN DE ALÉRGENOS (ANEXO II UE):"}
-              </strong>
-              {isEn ? "Contains: " : "Contiene: "}
-              <strong>
-                {allergens
-                  .map((a) => (isEn ? a.nameEn : a.nameEs))
-                  .join(", ")}
-              </strong>
-              .
+            <div className="mt-3 p-2.5 rounded-lg bg-amber-50/70 border border-amber-200/70 text-xs text-amber-950">
+              <span className="font-semibold">
+                {isEn ? "Allergens: " : "Alérgenos: "}
+              </span>
+              {allergens.map((a) => (isEn ? a.nameEn : a.nameEs)).join(", ")}.
             </div>
           )}
         </div>
       </div>
 
-      {/* Action Buttons: Vector SVG + 300 DPI PNG + Sanitary Audit Dossier */}
+      {/* Soft Action Buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <Button
-          variant="accent"
-          size="md"
-          onClick={handleDownloadSVG}
-          disabled={isExporting}
-          className="w-full"
-        >
-          <Download className="w-4 h-4" />
-          <span>
-            {lang === "en" ? "Download Vector (.SVG)" : "Descargar Vector (.SVG)"}
-          </span>
-        </Button>
-
-        <Button
-          variant="outline"
-          size="md"
+        <button
+          type="button"
           onClick={handleDownloadPNG}
           disabled={isExporting}
-          className="w-full bg-white"
+          className="h-11 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
         >
-          <ImageIcon className="w-4 h-4 text-accent" />
-          <span>
-            {lang === "en" ? "Download 300 DPI (.PNG)" : "Descargar 300 DPI (.PNG)"}
-          </span>
-        </Button>
-      </div>
+          <ImageIcon className="w-4 h-4 text-emerald-300" />
+          <span>{lang === "en" ? "Download PNG" : "Descargar PNG"}</span>
+        </button>
 
-      <Button
-        variant="primary"
-        size="md"
-        onClick={onOpenAuditSheet}
-        className="w-full"
-      >
-        <Shield className="w-4 h-4 text-accent" />
-        <span>
-          {lang === "en"
-            ? "View HACCP / Sanitary Inspection Dossier"
-            : "Ver Expediente Técnico APPCC (Inspección Sanidad)"}
-        </span>
-      </Button>
-
-      <div className="p-2.5 bg-surface border border-primary/30 text-[11px] text-primary flex items-center gap-2 font-mono">
-        <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-        <span>
-          {lang === "en"
-            ? "Compliant with Art. 31.4 Regulation (EU) 1169/2011 (±20% EC tolerance)."
-            : "Trazabilidad Art. 31.4 Reglamento (UE) 1169/2011 (±20% tolerancia CE)."}
-        </span>
+        <button
+          type="button"
+          onClick={handleDownloadSVG}
+          disabled={isExporting}
+          className="h-11 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-800 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+        >
+          <Download className="w-4 h-4 text-stone-600" />
+          <span>{lang === "en" ? "Download SVG" : "Descargar SVG"}</span>
+        </button>
       </div>
     </div>
   );
