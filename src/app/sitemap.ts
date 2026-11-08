@@ -27,6 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    { url: `${baseUrl}/wine-e-label`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${baseUrl}/es/etiqueta-electronica-vino`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     ...programmaticRoutes,
   ];
 }

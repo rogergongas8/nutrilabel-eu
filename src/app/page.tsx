@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { FileText, Plus } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { RecipeBuilder } from "@/components/RecipeBuilder";
@@ -22,6 +22,13 @@ export function NutriLabelWorkspace({ initialTemplate }: NutriLabelPageProps) {
   const [workMode, setWorkMode] = useState<"food" | "wine">(
     initialTemplate?.workMode || "food"
   );
+  // Deep link from the landing pages: /?mode=wine&lang=es
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("mode") === "wine") setWorkMode("wine");
+    const l = q.get("lang");
+    if (l === "es" || l === "en") setLang(l);
+  }, []);
   const [productName, setProductName] = useState(
     initialTemplate?.productNameEn || "Oat & Honey Cookies"
   );
