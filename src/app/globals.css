@@ -1,50 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  /* Editorial Gastronomy & Apothecary Paper Palette */
-  --color-background: #F4EFE6;
-  --color-surface: #FAF7F2;
-  --color-ink: #231F1D;
-  --color-primary: #C84B31;
-  --color-primary-hover: #AD3B23;
-  --color-botanical: #4A5D4E;
-  --color-neutral: #6E655F;
-  --color-border: #E2D9C8;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
-  color: var(--color-ink);
-  background-color: var(--color-background);
-  font-family: var(--font-body);
-  line-height: 1.6;
+  color: #171717;
+  background-color: #FAFAFA;
+  font-family: var(--font-sans);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-.font-serif {
-  font-family: var(--font-serif);
-}
-
 .nutrition-table-official {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   border-collapse: collapse;
   width: 100%;
 }
 
 .nutrition-table-official th,
 .nutrition-table-official td {
-  border-bottom: 1px solid #E5DEC9;
-  padding: 7px 6px;
-  font-size: 13px;
+  border-bottom: 1px solid #F0F0F0;
+  padding: 7px 4px;
+  font-size: 12.5px;
 }
 
 .nutrition-table-official th {
-  border-bottom: 2px solid #231F1D;
+  border-bottom: 1.5px solid #171717;
 }

@@ -14,8 +14,8 @@ interface NutritionLabelProps {
 
 export const NutritionLabel: React.FC<NutritionLabelProps> = ({
   calculation,
-  productName = "Producto Alimentario Artesanal",
-  lang = "es",
+  productName = "Food Product",
+  lang = "en",
 }) => {
   const [standard, setStandard] = useState<"EU" | "FDA">("EU");
   const [isExporting, setIsExporting] = useState(false);
@@ -25,17 +25,12 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
 
   if (!calculation) {
     return (
-      <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-10 text-center">
-        <div className="w-11 h-11 rounded-xl bg-[#EBE4D8] text-[#5C534C] flex items-center justify-center mx-auto mb-3">
-          <FileCheck className="w-5 h-5" />
-        </div>
-        <h3 className="text-base font-bold text-[#231F1D]">
-          {lang === "en" ? "Your label will appear here" : "Tu etiqueta aparecerá aquí"}
-        </h3>
-        <p className="text-xs text-[#6E655F] mt-1 max-w-xs mx-auto">
+      <div className="bg-white rounded-xl border border-neutral-200/90 p-10 text-center">
+        <FileCheck className="w-5 h-5 text-neutral-400 mx-auto mb-2" />
+        <p className="text-xs text-neutral-500">
           {lang === "en"
-            ? "Add at least one ingredient on the left to generate your nutrition label."
-            : "Añade al menos un ingrediente a la izquierda para generar la tabla nutricional."}
+            ? "Add ingredients on the left to preview your nutrition label."
+            : "Añade ingredientes a la izquierda para ver la etiqueta."}
         </p>
       </div>
     );
@@ -71,29 +66,26 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     const footer1 = isEn
       ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal)"
       : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)";
-    const footer2 = isEn
-      ? "Calculated per Art. 31.4 Regulation (EU) No 1169/2011"
-      : "Calculado conforme al Art. 31.4 Reglamento (UE) Nº 1169/2011";
 
     return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="440" height="310" viewBox="0 0 440 310">
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="290" viewBox="0 0 440 290">
   <style>
-    .title { font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #231F1D; }
-    .header { font-family: Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #231F1D; }
-    .row { font-family: Helvetica, Arial, sans-serif; font-size: 11px; fill: #231F1D; }
+    .title { font-family: Helvetica, Arial, sans-serif; font-size: 15px; font-weight: bold; fill: #171717; }
+    .header { font-family: Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #171717; }
+    .row { font-family: Helvetica, Arial, sans-serif; font-size: 11px; fill: #171717; }
     .bold { font-weight: bold; }
-    .sub { font-family: Helvetica, Arial, sans-serif; fill: #6E655F; font-size: 9.5px; }
-    .line { stroke: #231F1D; stroke-width: 1; }
-    .thick-line { stroke: #231F1D; stroke-width: 2.5; }
+    .sub { font-family: Helvetica, Arial, sans-serif; fill: #737373; font-size: 9.5px; }
+    .line { stroke: #E5E5E5; stroke-width: 1; }
+    .thick-line { stroke: #171717; stroke-width: 2; }
   </style>
-  <rect width="440" height="310" fill="#ffffff" stroke="#231F1D" stroke-width="2.5"/>
+  <rect width="440" height="290" fill="#ffffff" stroke="#171717" stroke-width="2"/>
   <text x="18" y="30" class="title">${title}</text>
   <line x1="18" y1="38" x2="422" y2="38" class="thick-line"/>
   <text x="18" y="54" class="header">${col1}</text>
   <text x="235" y="54" class="header">${col2}</text>
   <text x="315" y="54" class="header">${col3}</text>
   <text x="385" y="54" class="header">${col4}</text>
-  <line x1="18" y1="61" x2="422" y2="61" class="line"/>
+  <line x1="18" y1="61" x2="422" y2="61" class="thick-line"/>
   
   <text x="18" y="79" class="row bold">${rowEnergy}</text>
   <text x="200" y="79" class="row">${per100g.energyKj} kJ / ${per100g.energyKcal} kcal</text>
@@ -137,8 +129,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
   <text x="390" y="231" class="row">${referenceIntakePercent.salt}%</text>
   <line x1="18" y1="240" x2="422" y2="240" class="thick-line"/>
 
-  <text x="18" y="262" class="sub">${footer1}</text>
-  <text x="18" y="278" class="sub">${footer2}</text>
+  <text x="18" y="264" class="sub">${footer1}</text>
 </svg>`.trim();
   };
 
@@ -169,7 +160,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
       const scale = 3;
       const canvas = document.createElement("canvas");
       canvas.width = 440 * scale;
-      canvas.height = 310 * scale;
+      canvas.height = 290 * scale;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.scale(scale, scale);
@@ -195,225 +186,166 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
     : calculation.ingredientsListFormatted;
 
   return (
-    <div className="bg-[#FAF7F2] rounded-2xl border border-[#E2D9C8] shadow-xs p-6 space-y-5">
-      {/* Warm Format Switcher */}
+    <div className="bg-white rounded-xl border border-neutral-200/90 p-5 space-y-4">
+      {/* Top Format Switcher */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[#6E655F]">
-          {lang === "en" ? "Format" : "Formato normativo"}
+        <span className="text-xs font-medium text-neutral-500">
+          {lang === "en" ? "Label Preview" : "Vista previa"}
         </span>
 
-        <div className="flex rounded-lg bg-[#EBE4D8] p-0.5 text-xs font-semibold">
+        <div className="flex rounded-lg bg-neutral-100 p-0.5 text-xs font-medium">
           <button
             type="button"
             onClick={() => setStandard("EU")}
-            className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
               standard === "EU"
-                ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
-                : "text-[#6E655F] hover:text-[#231F1D]"
+                ? "bg-white text-neutral-900 shadow-2xs"
+                : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
-            {lang === "en" ? "Europe / UK" : "Europa (UE)"}
+            EU / UK
           </button>
           <button
             type="button"
             onClick={() => setStandard("FDA")}
-            className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
               standard === "FDA"
-                ? "bg-[#FAF7F2] text-[#231F1D] shadow-2xs"
-                : "text-[#6E655F] hover:text-[#231F1D]"
+                ? "bg-white text-neutral-900 shadow-2xs"
+                : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
-            USA (FDA)
+            US FDA
           </button>
         </div>
       </div>
 
-      {/* Print Label Paper Box */}
+      {/* Crisp Label Box */}
       <div
         ref={labelRef}
-        className="bg-white rounded-xl border border-[#CFC5B4] p-5 shadow-2xs"
+        className="bg-white rounded-lg border border-neutral-300 p-4"
       >
-        <div className="border-b-2 border-[#231F1D] pb-2.5 mb-2">
-          <h3 className="text-base font-extrabold tracking-tight text-[#231F1D] uppercase">
+        <div className="border-b-2 border-neutral-900 pb-2 mb-1.5">
+          <h3 className="text-sm font-bold tracking-tight text-neutral-900 uppercase">
             {standard === "FDA"
               ? "Nutrition Facts"
               : isEn
               ? "Nutrition Declaration"
               : "Información Nutricional"}
           </h3>
-          <p className="text-xs text-[#6E655F] mt-0.5">
-            {isEn ? "Serving size:" : "Tamaño de ración:"}{" "}
-            <strong className="font-semibold text-[#231F1D]">
-              {servingSizeGrams} g
-            </strong>{" "}
-            ({calculation.servingsCount}{" "}
-            {isEn ? "servings" : "raciones por envase"})
+          <p className="text-[11px] text-neutral-500">
+            {isEn ? "Serving:" : "Ración:"} {servingSizeGrams} g
           </p>
         </div>
 
-        {/* Nutrient Table */}
-        <div className="overflow-x-auto">
-          <table className="nutrition-table-official text-[#231F1D]">
-            <thead>
-              <tr className="text-left text-xs font-bold text-[#3D3733]">
-                <th className="py-2 px-1">
-                  {isEn ? "Typical values" : "Valores medios"}
-                </th>
-                <th className="py-2 px-1 text-right">
-                  {isEn ? "Per 100 g" : "Por 100 g"}
-                </th>
-                <th className="py-2 px-1 text-right">
-                  {isEn ? `Per ${servingSizeGrams} g` : `Por ${servingSizeGrams} g`}
-                </th>
-                <th className="py-2 px-1 text-right">
-                  {isEn ? "% RI*" : "% IR*"}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="text-xs">
-              <tr className="font-semibold">
-                <td className="py-2 px-1">
-                  {isEn ? "Energy" : "Valor energético"}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {per100g.energyKj} kJ / {per100g.energyKcal} kcal
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {perServing.energyKcal} kcal
-                </td>
-                <td className="py-2 px-1 text-right text-[#6E655F]">
-                  {referenceIntakePercent.energy}%
-                </td>
-              </tr>
+        <table className="nutrition-table-official text-neutral-900">
+          <thead>
+            <tr className="text-left text-[11px] font-semibold text-neutral-500">
+              <th className="py-1.5">
+                {isEn ? "Typical values" : "Valores medios"}
+              </th>
+              <th className="py-1.5 text-right">100 g</th>
+              <th className="py-1.5 text-right">{servingSizeGrams} g</th>
+            </tr>
+          </thead>
+          <tbody className="text-xs">
+            <tr className="font-medium">
+              <td className="py-1.5">{isEn ? "Energy" : "Energía"}</td>
+              <td className="py-1.5 text-right">
+                {per100g.energyKj} kJ / {per100g.energyKcal} kcal
+              </td>
+              <td className="py-1.5 text-right">{perServing.energyKcal} kcal</td>
+            </tr>
+            <tr className="font-medium">
+              <td className="py-1.5">{isEn ? "Fat" : "Grasas"}</td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(per100g.fat, "macro")}
+              </td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(perServing.fat, "macro")}
+              </td>
+            </tr>
+            <tr className="text-neutral-500">
+              <td className="py-1 pl-3">
+                {isEn ? "of which saturates" : "de las cuales saturadas"}
+              </td>
+              <td className="py-1 text-right">
+                {formatNutrientDisplay(per100g.saturatedFat, "saturated")}
+              </td>
+              <td className="py-1 text-right">
+                {formatNutrientDisplay(perServing.saturatedFat, "saturated")}
+              </td>
+            </tr>
+            <tr className="font-medium">
+              <td className="py-1.5">
+                {isEn ? "Carbohydrate" : "Hidratos de carbono"}
+              </td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(per100g.carbs, "macro")}
+              </td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(perServing.carbs, "macro")}
+              </td>
+            </tr>
+            <tr className="text-neutral-500">
+              <td className="py-1 pl-3">
+                {isEn ? "of which sugars" : "de los cuales azúcares"}
+              </td>
+              <td className="py-1 text-right">
+                {formatNutrientDisplay(per100g.sugars, "macro")}
+              </td>
+              <td className="py-1 text-right">
+                {formatNutrientDisplay(perServing.sugars, "macro")}
+              </td>
+            </tr>
+            <tr className="font-medium">
+              <td className="py-1.5">{isEn ? "Protein" : "Proteínas"}</td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(per100g.protein, "macro")}
+              </td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(perServing.protein, "macro")}
+              </td>
+            </tr>
+            <tr className="font-medium">
+              <td className="py-1.5">{isEn ? "Salt" : "Sal"}</td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(per100g.salt, "salt")}
+              </td>
+              <td className="py-1.5 text-right">
+                {formatNutrientDisplay(perServing.salt, "salt")}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-              <tr className="font-semibold">
-                <td className="py-2 px-1">{isEn ? "Fat" : "Grasas"}</td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(per100g.fat, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(perServing.fat, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right text-[#6E655F]">
-                  {referenceIntakePercent.fat}%
-                </td>
-              </tr>
-              <tr className="text-[#6E655F]">
-                <td className="py-1.5 px-1 pl-4">
-                  {isEn ? "of which saturates" : "de las cuales saturadas"}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {formatNutrientDisplay(per100g.saturatedFat, "saturated")}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {formatNutrientDisplay(perServing.saturatedFat, "saturated")}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {referenceIntakePercent.saturatedFat}%
-                </td>
-              </tr>
-
-              <tr className="font-semibold">
-                <td className="py-2 px-1">
-                  {isEn ? "Carbohydrate" : "Hidratos de carbono"}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(per100g.carbs, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(perServing.carbs, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right text-[#6E655F]">
-                  {referenceIntakePercent.carbs}%
-                </td>
-              </tr>
-              <tr className="text-[#6E655F]">
-                <td className="py-1.5 px-1 pl-4">
-                  {isEn ? "of which sugars" : "de los cuales azúcares"}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {formatNutrientDisplay(per100g.sugars, "macro")}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {formatNutrientDisplay(perServing.sugars, "macro")}
-                </td>
-                <td className="py-1.5 px-1 text-right">
-                  {referenceIntakePercent.sugars}%
-                </td>
-              </tr>
-
-              <tr className="font-semibold">
-                <td className="py-2 px-1">{isEn ? "Protein" : "Proteínas"}</td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(per100g.protein, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(perServing.protein, "macro")}
-                </td>
-                <td className="py-2 px-1 text-right text-[#6E655F]">
-                  {referenceIntakePercent.protein}%
-                </td>
-              </tr>
-
-              <tr className="font-semibold">
-                <td className="py-2 px-1">{isEn ? "Salt" : "Sal"}</td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(per100g.salt, "salt")}
-                </td>
-                <td className="py-2 px-1 text-right">
-                  {formatNutrientDisplay(perServing.salt, "salt")}
-                </td>
-                <td className="py-2 px-1 text-right text-[#6E655F]">
-                  {referenceIntakePercent.salt}%
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="mt-2.5 text-[11px] text-[#8C827A] leading-snug">
-          {isEn
-            ? "* Reference intake of an average adult (8 400 kJ / 2 000 kcal)."
-            : "* Ingesta de referencia de un adulto medio (8 400 kJ / 2 000 kcal)."}
-        </p>
-
-        {/* Ingredients & Allergens */}
-        <div className="mt-4 pt-3.5 border-t border-[#E5DEC9]">
-          <p className="text-xs font-bold text-[#231F1D]">
-            {isEn ? "Ingredients:" : "Ingredientes:"}
-          </p>
-          <p className="mt-1 text-xs text-[#5C534C] leading-relaxed">
+        {/* Ingredients */}
+        <div className="mt-3 pt-2.5 border-t border-neutral-200 text-xs">
+          <span className="font-semibold text-neutral-900">
+            {isEn ? "Ingredients: " : "Ingredientes: "}
+          </span>
+          <span className="text-neutral-600 leading-relaxed">
             {displayedIngredientList.split("**").map((chunk, i) =>
               i % 2 === 1 ? (
-                <strong key={i} className="font-bold text-[#231F1D] underline">
+                <strong key={i} className="font-semibold text-neutral-900 underline">
                   {chunk}
                 </strong>
               ) : (
                 chunk
               )
             )}
-          </p>
-
-          {allergens.length > 0 && (
-            <div className="mt-3 p-2.5 rounded-lg bg-[#FDF1EE] border border-[#F3D0C7] text-xs text-[#7D2714]">
-              <span className="font-semibold">
-                {isEn ? "Allergens: " : "Alérgenos: "}
-              </span>
-              {allergens.map((a) => (isEn ? a.nameEn : a.nameEs)).join(", ")}.
-            </div>
-          )}
+          </span>
         </div>
       </div>
 
-      {/* Action Buttons in Warm Terracotta & Linen */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      {/* Download Buttons */}
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           onClick={handleDownloadPNG}
           disabled={isExporting}
-          className="h-11 px-4 rounded-xl bg-[#C84B31] hover:bg-[#AD3B23] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
+          className="h-10 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
         >
-          <ImageIcon className="w-4 h-4 text-[#FADCD5]" />
+          <ImageIcon className="w-3.5 h-3.5" />
           <span>{lang === "en" ? "Download PNG" : "Descargar PNG"}</span>
         </button>
 
@@ -421,9 +353,9 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           type="button"
           onClick={handleDownloadSVG}
           disabled={isExporting}
-          className="h-11 px-4 rounded-xl bg-[#EBE4D8] hover:bg-[#DFD6C7] text-[#231F1D] text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="h-10 px-4 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-900 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
         >
-          <Download className="w-4 h-4 text-[#5C534C]" />
+          <Download className="w-3.5 h-3.5" />
           <span>{lang === "en" ? "Download SVG" : "Descargar SVG"}</span>
         </button>
       </div>
