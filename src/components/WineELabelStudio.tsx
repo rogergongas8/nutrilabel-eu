@@ -5,12 +5,21 @@ import { Wine, Download, Smartphone, ExternalLink } from "lucide-react";
 import { calculateWineNutrition, WineInput } from "@/lib/wine-calculator";
 import { generateQRMatrix } from "@/lib/qr-encoder";
 
-export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
+export interface WineEditContext {
+  id: string;
+  token: string;
+  /** Permanent public URL: this is what the bottle QR encodes. */
+  publicUrl: string;
+  initialWine: WineInput;
+}
+
+export const WineELabelStudio: React.FC<{ lang?: "es" | "en"; edit?: WineEditContext }> = ({
   lang = "en",
+  edit,
 }) => {
   const isEn = lang === "en";
 
-  const [wine, setWine] = useState<WineInput>({
+  const [wine, setWine] = useState<WineInput>(edit?.initialWine ?? {
     wineName: "Viña Pedrosa Reserva",
     vintageYear: "2024",
     appellation: "D.O.Ca. Rioja",
@@ -34,9 +43,63 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
 
   const result = useMemo(() => calculateWineNutrition(wine, lang), [wine, lang]);
   const qrMatrix = useMemo(
-    () => generateQRMatrix(result.eLabelUrl),
-    [result.eLabelUrl]
+    () => generateQRMatrix(edit?.publicUrl ?? result.eLabelUrl),
+    [edit?.publicUrl, result.eLabelUrl]
   );
+
+  const [publishEmail, setPublishEmail] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
+
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  const handleSave = async () => {
+    if (!edit) return;
+    setSaveState("saving");
+    try {
+      const res = await fetch(`/api/elabels/${edit.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wine, editToken: edit.token }),
+      });
+      setSaveState(res.ok ? "saved" : "error");
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const handlePublish = async () => {
+    setPublishError("");
+    setPublishing(true);
+    try {
+      const created = await fetch("/api/elabels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wine, email: publishEmail }),
+      });
+      if (!created.ok) {
+        const { error } = await created.json().catch(() => ({ error: "" }));
+        throw new Error(error || "error");
+      }
+      const { id, editToken } = await created.json();
+
+      const checkout = await fetch(`/api/elabels/${id}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ editToken }),
+      });
+      if (!checkout.ok) throw new Error("checkout");
+      const { url } = await checkout.json();
+      window.location.href = url;
+    } catch (e) {
+      setPublishing(false);
+      setPublishError(
+        isEn
+          ? `Could not start publishing (${(e as Error).message}). Check the email and try again.`
+          : `No se pudo iniciar la publicación (${(e as Error).message}). Revisa el email e inténtalo de nuevo.`
+      );
+    }
+  };
 
   const handleDownloadWineSVG = () => {
     const quietZone = 4;
@@ -404,7 +467,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
             </button>
 
             <a
-              href={result.localELabelPath}
+              href={edit?.publicUrl ?? result.localELabelPath}
               target="_blank"
               rel="noopener noreferrer"
               className="h-10 px-4 rounded-xl bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 text-xs font-medium flex items-center justify-center gap-2 transition-all"
@@ -413,6 +476,71 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
               <span>{isEn ? "Open Mobile Page" : "Abrir Ficha Móvil"}</span>
             </a>
           </div>
+
+          {edit ? (
+            <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 space-y-2.5">
+              <p className="text-xs font-semibold text-emerald-900">
+                {isEn ? "Editing your hosted e-label" : "Editando tu e-label alojada"}
+              </p>
+              <p className="text-[11px] text-emerald-900/80 leading-relaxed">
+                {isEn
+                  ? "Changes go live at the same address. The printed QR does not change."
+                  : "Los cambios se publican en la misma dirección. El QR impreso no cambia."}
+              </p>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saveState === "saving"}
+                className="w-full h-10 rounded-xl bg-neutral-900 hover:bg-neutral-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer transition-all"
+              >
+                {saveState === "saving"
+                  ? isEn ? "Saving…" : "Guardando…"
+                  : isEn ? "Save changes" : "Guardar cambios"}
+              </button>
+              {saveState === "saved" && (
+                <p className="text-[11px] text-emerald-700">{isEn ? "Saved and live." : "Guardado y publicado."}</p>
+              )}
+              {saveState === "error" && (
+                <p className="text-[11px] text-red-600">
+                  {isEn ? "Could not save. Check the values and try again." : "No se pudo guardar. Revisa los valores e inténtalo de nuevo."}
+                </p>
+              )}
+            </div>
+          ) : (
+            <>
+          {/* Hosted, permanent e-label (paid) */}
+          <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 space-y-2.5">
+            <p className="text-xs font-semibold text-emerald-900">
+              {isEn
+                ? "Need a permanent, editable e-label?"
+                : "¿Necesitas una e-label permanente y editable?"}
+            </p>
+            <p className="text-[11px] text-emerald-900/80 leading-relaxed">
+              {isEn
+                ? "We host it for a year at a stable address, so the QR you print never breaks."
+                : "La alojamos un año en una dirección estable, para que el QR que imprimas no deje de funcionar."}
+            </p>
+            <input
+              type="email"
+              value={publishEmail}
+              onChange={(e) => setPublishEmail(e.target.value)}
+              placeholder={isEn ? "Your email" : "Tu email"}
+              className="w-full h-9 px-3 rounded-lg border border-neutral-200 bg-white text-xs"
+            />
+            <button
+              type="button"
+              onClick={handlePublish}
+              disabled={publishing}
+              className="w-full h-10 rounded-xl bg-neutral-900 hover:bg-neutral-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer transition-all"
+            >
+              {publishing
+                ? isEn ? "Redirecting…" : "Redirigiendo…"
+                : isEn ? "Publish hosted e-label" : "Publicar e-label alojada"}
+            </button>
+            {publishError && <p className="text-[11px] text-red-600">{publishError}</p>}
+          </div>
+            </>
+          )}
         </div>
       </div>
     </div>
