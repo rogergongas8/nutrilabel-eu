@@ -199,7 +199,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
             onClick={() => setStandard("EU")}
             className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
               standard === "EU"
-                ? "bg-white text-neutral-900 shadow-2xs"
+                ? "bg-emerald-600 text-white font-semibold shadow-2xs"
                 : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
@@ -210,7 +210,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
             onClick={() => setStandard("FDA")}
             className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
               standard === "FDA"
-                ? "bg-white text-neutral-900 shadow-2xs"
+                ? "bg-emerald-600 text-white font-semibold shadow-2xs"
                 : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
@@ -343,7 +343,7 @@ export const NutritionLabel: React.FC<NutritionLabelProps> = ({
           type="button"
           onClick={handleDownloadPNG}
           disabled={isExporting}
-          className="h-10 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          className="h-10 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
         >
           <ImageIcon className="w-3.5 h-3.5" />
           <span>{lang === "en" ? "Download PNG" : "Descargar PNG"}</span>

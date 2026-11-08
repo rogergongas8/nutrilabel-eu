@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Warm Terracotta Stamp Tag Background -->
-  <rect x="6" y="6" width="52" height="52" rx="14" fill="#C84B31"/>
-  <!-- Inner Cream Apothecary Label -->
-  <path d="M16 20C16 16.6863 18.6863 14 22 14H42C45.3137 14 48 16.6863 48 20V46C48 48.2091 46.2091 50 44 50H20C17.7909 50 16 48.2091 16 46V20Z" fill="#FAF7F2"/>
-  <!-- Tag Hole -->
-  <circle cx="32" cy="20" r="2.5" fill="#C84B31"/>
-  <!-- Nutrition Table Lines -->
-  <line x1="22" y1="28" x2="42" y2="28" stroke="#231F1D" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="22" y1="34" x2="36" y2="34" stroke="#6E655F" stroke-width="2" stroke-linecap="round"/>
-  <line x1="22" y1="39.5" x2="33" y2="39.5" stroke="#6E655F" stroke-width="2" stroke-linecap="round"/>
-  <line x1="22" y1="45" x2="38" y2="45" stroke="#231F1D" stroke-width="2" stroke-linecap="round"/>
-  <!-- Olive Leaf Botanical Accent -->
-  <path d="M45 34C45 34 38 34.5 36.5 40C35 45.5 41.5 47 41.5 47C41.5 47 46.5 42.5 45 34Z" fill="#4A5D4E"/>
+  <defs>
+    <linearGradient id="nl-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#nl-grad)" />
+  <path d="M32 14c-9.94 0-18 8.06-18 18v16c0 1.1.9 2 2 2h32c1.1 0 2-.9 2-2V32c0-9.94-8.06-18-18-18z" fill="#FFFFFF" fill-opacity="0.15" />
+  <path d="M32 14v36" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <path d="M32 26h14" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <path d="M32 34h11" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <path d="M32 42h14" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  <circle cx="23" cy="34" r="4" fill="#34D399" />
 </svg>

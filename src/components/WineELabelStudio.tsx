@@ -393,7 +393,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
             <button
               type="button"
               onClick={handleDownloadWineSVG}
-              className="h-10 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>{isEn ? "Download QR (.SVG)" : "Descargar QR (.SVG)"}</span>

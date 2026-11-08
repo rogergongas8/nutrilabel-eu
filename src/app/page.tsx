@@ -110,31 +110,31 @@ export function NutriLabelWorkspace({ initialTemplate }: NutriLabelPageProps) {
           </a>
 
           <div className="flex items-center gap-2.5">
-            {/* Mode Switcher */}
-            <div className="flex rounded-lg bg-neutral-100 p-0.5 text-xs font-medium">
-              <button
-                type="button"
-                onClick={() => setWorkMode("food")}
-                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                  workMode === "food"
-                    ? "bg-white text-neutral-900 shadow-2xs"
-                    : "text-neutral-500 hover:text-neutral-900"
-                }`}
-              >
-                {isEn ? "Food Label" : "Alimentos"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setWorkMode("wine")}
-                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                  workMode === "wine"
-                    ? "bg-white text-neutral-900 shadow-2xs"
-                    : "text-neutral-500 hover:text-neutral-900"
-                }`}
-              >
-                {isEn ? "Wine QR" : "Vinos QR"}
-              </button>
-            </div>
+              {/* Mode Switcher */}
+              <div className="flex rounded-lg bg-neutral-100 p-0.5 text-xs font-medium">
+                <button
+                  type="button"
+                  onClick={() => setWorkMode("food")}
+                  className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+                    workMode === "food"
+                      ? "bg-white text-emerald-700 font-semibold shadow-2xs"
+                      : "text-neutral-500 hover:text-neutral-900"
+                  }`}
+                >
+                  {isEn ? "Food Label" : "Alimentos"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWorkMode("wine")}
+                  className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+                    workMode === "wine"
+                      ? "bg-white text-emerald-700 font-semibold shadow-2xs"
+                      : "text-neutral-500 hover:text-neutral-900"
+                  }`}
+                >
+                  {isEn ? "Wine QR" : "Vinos QR"}
+                </button>
+              </div>
 
             {/* Language Switcher EN | ES */}
             <div className="flex rounded-lg bg-neutral-100 p-0.5 text-xs font-medium">
@@ -190,7 +190,7 @@ export function NutriLabelWorkspace({ initialTemplate }: NutriLabelPageProps) {
               <button
                 type="button"
                 onClick={handleStartNewBlankLabel}
-                className="px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors"
+                className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{isEn ? "New Blank" : "En blanco"}</span>

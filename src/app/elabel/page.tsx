@@ -2,8 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ShieldCheck, Wine, Globe, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Globe, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { BrandLogo } from "@/components/BrandLogo";
 
 type Lang = "es" | "en" | "fr" | "de" | "it";
 
@@ -103,15 +104,15 @@ const TRANSLATIONS: Record<
     negligible:
       "Enthält geringfügige Mengen von Fett, gesättigten Fettsäuren, Eiweiß und Salz.",
     ingredientsTitle: "ZUTATENVERZEICHNIS",
-    grapes: "Weintrauben",
-    organicGrapes: "Zertifizierte Bio-Weintrauben",
+    grapes: "Trauben",
+    organicGrapes: "Aus zertifizierten Bio-Trauben",
     acidity: "Säureregulatoren (Weinsäure)",
     sulfites: "Konservierungsstoff: SCHWEFELDIOXID (SULFITE) (E-220)",
-    egg: "Schönungsmittel: EIALBUMIN",
-    milk: "Schönungsmittel: MILCHKASEIN",
+    egg: "Klärungsmittel: EIALBUMIN",
+    milk: "Klärungsmittel: MILCHKASEIN",
     atmosphere: "Unter Schutzatmosphäre abgefüllt.",
     cookieFreeNotice:
-      "Keine Tracking-Cookies oder Werbeskripte gemäß Artikel 119 der Verordnung (EU) Nr. 1308/2013.",
+      "Tracking-freie Seite ohne Cookies und Marketing-Skripte gemäß Artikel 119 der Verordnung (EU) Nr. 1308/2013.",
   },
   it: {
     badge: "E-LABEL UFFICIALE REGOLAMENTO (UE) 2021/2117",
@@ -156,121 +157,134 @@ function ELabelViewerContent() {
   const t = TRANSLATIONS[lang];
 
   return (
-    <div className="min-h-screen bg-[#F6F3EC] text-[#111613] py-8 px-4 flex flex-col items-center justify-center">
-      <div className="max-w-md w-full bg-white border-2 border-[#111613] p-6 shadow-tactile space-y-5">
-        {/* Language Bar */}
-        <div className="flex items-center justify-between border-b border-[#111613]/20 pb-3">
-          <div className="flex items-center gap-1.5 font-mono text-[10px] font-bold text-[#143326]">
-            <Globe className="w-3.5 h-3.5 text-[#D94E28]" />
-            <span>EU 24 LANGUAGES READY</span>
-          </div>
-          <div className="flex border border-[#143326] font-mono text-[11px] font-bold">
-            {(["es", "en", "fr", "de", "it"] as Lang[]).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLang(l)}
-                className={`px-2 py-0.5 uppercase cursor-pointer ${
-                  lang === l
-                    ? "bg-[#143326] text-white"
-                    : "text-[#143326] hover:bg-[#143326]/10"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Wine Identity */}
-        <div>
-          <span className="inline-block font-mono text-[10px] font-bold uppercase px-2 py-0.5 bg-[#143326] text-[#F6F3EC]">
-            {t.badge}
-          </span>
-          <h1 className="font-display text-2xl font-black text-[#111613] mt-2">
-            {name} ({year})
-          </h1>
-          <p className="font-mono text-xs text-[#5A625E] mt-0.5">
-            {appellation} · {abv}% vol · 750 ml
-          </p>
-        </div>
-
-        {/* Official Nutrition Table per 100 ml */}
-        <div className="border-2 border-[#111613] p-4">
-          <h2 className="font-sans text-sm font-black uppercase border-b-2 border-[#111613] pb-1.5 mb-2">
-            {t.nutritionTitle}
-          </h2>
-          <table className="w-full text-xs font-sans divide-y divide-[#111613]/20">
-            <thead>
-              <tr className="font-bold text-left">
-                <th className="py-1.5">{t.avgValues}</th>
-                <th className="py-1.5 text-right">{t.per100ml}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#111613]/20">
-              <tr className="font-bold">
-                <td className="py-2">{t.energy}</td>
-                <td className="py-2 text-right">
-                  {kj} kJ / {kcal} kcal
-                </td>
-              </tr>
-              <tr>
-                <td className="py-1.5 font-bold">{t.carbs}</td>
-                <td className="py-1.5 text-right font-bold">{carbs} g</td>
-              </tr>
-              <tr>
-                <td className="py-1.5 pl-3 text-[#5A625E]">{t.sugars}</td>
-                <td className="py-1.5 text-right">{sugars} g</td>
-              </tr>
-              <tr>
-                <td colSpan={2} className="py-2 text-[11px] text-[#5A625E] italic">
-                  {t.negligible}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Ingredients & Allergens */}
-        <div className="border-t-2 border-[#111613] pt-3">
-          <h3 className="font-sans text-xs font-black uppercase text-[#111613]">
-            {t.ingredientsTitle}:
-          </h3>
-          <p className="text-xs leading-relaxed text-[#111613] mt-1">
-            {org ? t.organicGrapes : t.grapes}, {t.acidity}
-            {sulfites && (
-              <>
-                , <strong className="underline font-black">{t.sulfites}</strong>
-              </>
-            )}
-            {egg && (
-              <>
-                , <strong className="underline font-black">{t.egg}</strong>
-              </>
-            )}
-            {milk && (
-              <>
-                , <strong className="underline font-black">{t.milk}</strong>
-              </>
-            )}
-            . {t.atmosphere}
-          </p>
-        </div>
-
-        {/* Zero Cookie Compliance Notice */}
-        <div className="p-3 bg-[#F6F3EC] border border-[#143326]/30 flex items-start gap-2.5 text-[11px] font-mono text-[#143326]">
-          <ShieldCheck className="w-4 h-4 text-[#D94E28] shrink-0 mt-0.5" />
-          <span>{t.cookieFreeNotice}</span>
-        </div>
-
-        <div className="pt-2 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#143326] hover:text-[#D94E28] underline"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver al Generador NutriLabel</span>
+    <div className="min-h-screen bg-[#FAFAFA] text-neutral-900 py-10 px-4 flex flex-col items-center justify-center">
+      <div className="max-w-md w-full space-y-4">
+        {/* Top Header with Brand Logo */}
+        <div className="flex items-center justify-between px-1">
+          <Link href="/" className="hover:opacity-85 transition-opacity">
+            <BrandLogo size="sm" />
           </Link>
+          <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            0% Cookies
+          </span>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white rounded-2xl border border-neutral-200/90 p-6 shadow-2xs space-y-5">
+          {/* Language Switcher Bar */}
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
+              <Globe className="w-3.5 h-3.5 text-emerald-600" />
+              <span>EU 24 Languages</span>
+            </div>
+            <div className="flex rounded-lg bg-neutral-100 p-0.5 text-[11px] font-medium">
+              {(["es", "en", "fr", "de", "it"] as Lang[]).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  className={`px-2.5 py-1 rounded-md uppercase cursor-pointer transition-colors ${
+                    lang === l
+                      ? "bg-emerald-600 text-white font-semibold shadow-2xs"
+                      : "text-neutral-500 hover:text-neutral-900"
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Wine Identity */}
+          <div>
+            <span className="inline-block text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-neutral-100 text-neutral-600 mb-1.5">
+              {t.badge}
+            </span>
+            <h1 className="text-xl font-bold text-neutral-900">
+              {name} ({year})
+            </h1>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              {appellation} · {abv}% vol · 750 ml
+            </p>
+          </div>
+
+          {/* Official Nutrition Table per 100 ml */}
+          <div className="rounded-xl bg-neutral-50 border border-neutral-200/80 p-4">
+            <h2 className="text-xs font-bold uppercase text-neutral-900 border-b border-neutral-200/80 pb-2 mb-2">
+              {t.nutritionTitle}
+            </h2>
+            <table className="w-full text-xs divide-y divide-neutral-200/60">
+              <thead>
+                <tr className="font-semibold text-neutral-500 text-left">
+                  <th className="py-1.5">{t.avgValues}</th>
+                  <th className="py-1.5 text-right">{t.per100ml}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200/60">
+                <tr className="font-medium text-neutral-900">
+                  <td className="py-2">{t.energy}</td>
+                  <td className="py-2 text-right font-bold text-emerald-800">
+                    {kj} kJ / {kcal} kcal
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-1.5 font-medium text-neutral-700">{t.carbs}</td>
+                  <td className="py-1.5 text-right text-neutral-900">{carbs} g</td>
+                </tr>
+                <tr>
+                  <td className="py-1.5 pl-3 text-neutral-500">{t.sugars}</td>
+                  <td className="py-1.5 text-right text-neutral-900">{sugars} g</td>
+                </tr>
+                <tr>
+                  <td colSpan={2} className="py-2 text-[11px] text-neutral-400 italic">
+                    {t.negligible}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Ingredients & Allergens */}
+          <div className="pt-2 text-xs">
+            <h3 className="font-semibold text-neutral-900 mb-1">
+              {t.ingredientsTitle}:
+            </h3>
+            <p className="text-neutral-600 leading-relaxed">
+              {org ? t.organicGrapes : t.grapes}, {t.acidity}
+              {sulfites && (
+                <>
+                  , <strong className="font-semibold text-neutral-900 underline">{t.sulfites}</strong>
+                </>
+              )}
+              {egg && (
+                <>
+                  , <strong className="font-semibold text-neutral-900 underline">{t.egg}</strong>
+                </>
+              )}
+              {milk && (
+                <>
+                  , <strong className="font-semibold text-neutral-900 underline">{t.milk}</strong>
+                </>
+              )}
+              . {t.atmosphere}
+            </p>
+          </div>
+
+          {/* Zero Cookie Compliance Notice */}
+          <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/70 flex items-start gap-2.5 text-[11px] text-emerald-900">
+            <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+            <span>{t.cookieFreeNotice}</span>
+          </div>
+
+          <div className="pt-1 text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-800"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Volver a NutriLabel Studio</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -281,7 +295,7 @@ export default function WineELabelPublicPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F6F3EC] flex items-center justify-center font-mono text-xs">
+        <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs text-neutral-500">
           Cargando E-Label Oficial UE 2021/2117...
         </div>
       }
