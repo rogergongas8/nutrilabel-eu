@@ -11,15 +11,26 @@ import { Footer } from "@/components/Footer";
 import { RecipeItem, Ingredient } from "@/types/nutrition";
 import { VERIFIED_INGREDIENTS } from "@/data/ingredients";
 import { calculateRecipeNutrition } from "@/lib/calculator";
+import { SeoFoodTemplate } from "@/data/seo-templates";
 
-export default function NutriLabelToolFirstPage() {
+interface NutriLabelPageProps {
+  initialTemplate?: SeoFoodTemplate;
+}
+
+export function NutriLabelWorkspace({ initialTemplate }: NutriLabelPageProps) {
   const [lang, setLang] = useState<"es" | "en">("en");
-  const [workMode, setWorkMode] = useState<"food" | "wine">("food");
-  const [productName, setProductName] = useState(
-    "Artisanal Oat & Honey Cookies"
+  const [workMode, setWorkMode] = useState<"food" | "wine">(
+    initialTemplate?.workMode || "food"
   );
-  const [evaporationPercent, setEvaporationPercent] = useState<number>(12);
-  const [servingsCount, setServingsCount] = useState<number>(12);
+  const [productName, setProductName] = useState(
+    initialTemplate?.productNameEn || "Artisanal Oat & Honey Cookies"
+  );
+  const [evaporationPercent, setEvaporationPercent] = useState<number>(
+    initialTemplate ? initialTemplate.evaporationPercent : 12
+  );
+  const [servingsCount, setServingsCount] = useState<number>(
+    initialTemplate ? initialTemplate.servingsCount : 12
+  );
   const [isAuditSheetOpen, setIsAuditSheetOpen] = useState(false);
 
   const productInputRef = useRef<HTMLInputElement>(null);
@@ -28,6 +39,20 @@ export default function NutriLabelToolFirstPage() {
 
   const [recipeItems, setRecipeItems] = useState<RecipeItem[]>(() => {
     const find = (id: string) => VERIFIED_INGREDIENTS.find((i) => i.id === id)!;
+    if (initialTemplate && initialTemplate.recipeItems.length > 0) {
+      return initialTemplate.recipeItems
+        .map((r) => {
+          const ing = find(r.ingredientId);
+          return ing
+            ? {
+                ingredientId: r.ingredientId,
+                ingredient: ing,
+                amountGrams: r.amountGrams,
+              }
+            : null;
+        })
+        .filter((x): x is RecipeItem => x !== null);
+    }
     return [
       { ingredientId: "copos-avena", ingredient: find("copos-avena"), amountGrams: 200 },
       { ingredientId: "harina-trigo-comun", ingredient: find("harina-trigo-comun"), amountGrams: 100 },
@@ -146,13 +171,15 @@ export default function NutriLabelToolFirstPage() {
       {/* Warm Apothecary Header */}
       <header className="sticky top-0 z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E2D9C8] py-3.5 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <BrandLogo
-            subtitle={
-              isEn
-                ? "Official EU 1169/2011 & FDA Nutrition Label Maker"
-                : "Estudio de Etiquetado Nutricional · Reglamento UE 1169/2011"
-            }
-          />
+          <a href="/" className="hover:opacity-90 transition-opacity">
+            <BrandLogo
+              subtitle={
+                isEn
+                  ? "Official EU 1169/2011 & FDA Nutrition Label Maker"
+                  : "Estudio de Etiquetado Nutricional · Reglamento UE 1169/2011"
+              }
+            />
+          </a>
 
           <div className="flex items-center gap-3">
             {/* Warm Linen Pill Switcher */}
@@ -189,7 +216,9 @@ export default function NutriLabelToolFirstPage() {
                 type="button"
                 onClick={() => {
                   setLang("en");
-                  if (productName === "Galletas Artesanas de Avena y Miel") {
+                  if (initialTemplate && productName === initialTemplate.productNameEs) {
+                    setProductName(initialTemplate.productNameEn);
+                  } else if (productName === "Galletas Artesanas de Avena y Miel") {
                     setProductName("Artisanal Oat & Honey Cookies");
                   }
                 }}
@@ -205,7 +234,9 @@ export default function NutriLabelToolFirstPage() {
                 type="button"
                 onClick={() => {
                   setLang("es");
-                  if (productName === "Artisanal Oat & Honey Cookies") {
+                  if (initialTemplate && productName === initialTemplate.productNameEn) {
+                    setProductName(initialTemplate.productNameEs);
+                  } else if (productName === "Artisanal Oat & Honey Cookies") {
                     setProductName("Galletas Artesanas de Avena y Miel");
                   }
                 }}
@@ -229,12 +260,20 @@ export default function NutriLabelToolFirstPage() {
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
               <div>
                 <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-[#231F1D] tracking-tight">
-                  {isEn
+                  {initialTemplate
+                    ? isEn
+                      ? initialTemplate.h1En
+                      : initialTemplate.h1Es
+                    : isEn
                     ? "Craft your official nutrition label"
                     : "Elabora tu etiqueta nutricional oficial"}
                 </h1>
-                <p className="text-sm text-[#6E655F] mt-1">
-                  {isEn
+                <p className="text-sm text-[#6E655F] mt-1 max-w-2xl">
+                  {initialTemplate
+                    ? isEn
+                      ? initialTemplate.subtitleEn
+                      : initialTemplate.subtitleEs
+                    : isEn
                     ? "1. Name your recipe · 2. Weigh your ingredients in grams · 3. Export your print-ready label."
                     : "1. Nombra tu receta · 2. Añade los ingredientes en gramos · 3. Descarga tu etiqueta lista para imprenta."}
                 </p>
@@ -372,4 +411,8 @@ export default function NutriLabelToolFirstPage() {
       />
     </div>
   );
+}
+
+export default function NutriLabelToolFirstPage() {
+  return <NutriLabelWorkspace />;
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ShieldCheck, X } from "lucide-react";
+import { SEO_FOOD_TEMPLATES } from "@/data/seo-templates";
 
 type LegalDocKey = "terminos" | "exencion" | "privacidad" | null;
 
@@ -73,6 +74,26 @@ export const Footer: React.FC<{ lang?: "es" | "en" }> = ({ lang = "en" }) => {
                   : "El Reglamento (UE) 2021/2117 exige mostrar la energía en botella y permite ofrecer los ingredientes y tabla nutricional mediante un QR sin cookies ni seguimiento."}
               </p>
             </details>
+          </div>
+        </section>
+
+        {/* Programmatic SEO Internal Links Directory */}
+        <section className="pt-4 border-t border-[#E5DEC9]">
+          <p className="text-xs font-semibold text-[#231F1D] mb-2.5">
+            {isEn
+              ? "Popular Nutrition Label Templates by Product Category:"
+              : "Plantillas de Etiquetas Nutricionales por Producto:"}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {SEO_FOOD_TEMPLATES.map((tpl) => (
+              <a
+                key={tpl.slug}
+                href={`/for/${tpl.slug}`}
+                className="px-3 py-1 rounded-lg bg-white border border-[#DCD2C0] hover:border-[#C84B31] text-xs text-[#5C534C] hover:text-[#231F1D] transition-colors"
+              >
+                {isEn ? tpl.navLabelEn : tpl.navLabelEs}
+              </a>
+            ))}
           </div>
         </section>
 
