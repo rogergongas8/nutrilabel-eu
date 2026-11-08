@@ -7,6 +7,8 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  // Google Search Console ownership verification (public by design).
+  verification: { google: "VWpNldQctWiAcf-7JBA--Nju78anincaBX9p5FKMH2Q" },
   title: {
     default:
       "Free EU & UK Nutrition Label Generator (1169/2011) & Wine QR E-Label | Generador Etiquetas Nutricionales | NutriLabel",
