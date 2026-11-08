@@ -10,6 +10,7 @@ interface TechnicalSheetModalProps {
   onClose: () => void;
   calculation: CalculationResult | null;
   productName?: string;
+  lang?: "es" | "en";
 }
 
 export const TechnicalSheetModal: React.FC<TechnicalSheetModalProps> = ({

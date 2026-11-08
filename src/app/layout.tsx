@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "es_ES",
-    alternateLocale: ["en_GB", "en_US"],
+    locale: "en_US",
+    alternateLocale: ["en_GB", "es_ES"],
     url: siteUrl,
     siteName: "NutriLabel EU",
     title:
@@ -124,7 +124,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="en">
       <head>
         <script
           type="application/ld+json"

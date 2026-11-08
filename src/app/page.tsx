@@ -13,10 +13,10 @@ import { VERIFIED_INGREDIENTS } from "@/data/ingredients";
 import { calculateRecipeNutrition } from "@/lib/calculator";
 
 export default function NutriLabelToolFirstPage() {
-  const [lang, setLang] = useState<"es" | "en">("es");
+  const [lang, setLang] = useState<"es" | "en">("en");
   const [workMode, setWorkMode] = useState<"food" | "wine">("food");
   const [productName, setProductName] = useState(
-    "Galletas Artesanas de Avena y Miel"
+    "Artisanal Oat & Honey Cookies"
   );
   const [evaporationPercent, setEvaporationPercent] = useState<number>(12);
   const [servingsCount, setServingsCount] = useState<number>(12);
@@ -183,22 +183,16 @@ export default function NutriLabelToolFirstPage() {
               </button>
             </div>
 
-            {/* Language Switcher ES | EN */}
+            {/* Language Switcher EN | ES */}
             <div className="flex rounded-xl bg-[#EBE4D8] p-1 text-xs font-semibold">
               <button
                 type="button"
-                onClick={() => setLang("es")}
-                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  lang === "es"
-                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
-                    : "text-[#6E655F] hover:text-[#231F1D]"
-                }`}
-              >
-                ES
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
+                onClick={() => {
+                  setLang("en");
+                  if (productName === "Galletas Artesanas de Avena y Miel") {
+                    setProductName("Artisanal Oat & Honey Cookies");
+                  }
+                }}
                 className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
                   lang === "en"
                     ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
@@ -206,6 +200,22 @@ export default function NutriLabelToolFirstPage() {
                 }`}
               >
                 EN
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLang("es");
+                  if (productName === "Artisanal Oat & Honey Cookies") {
+                    setProductName("Galletas Artesanas de Avena y Miel");
+                  }
+                }}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  lang === "es"
+                    ? "bg-[#FAF7F2] text-[#231F1D] shadow-xs"
+                    : "text-[#6E655F] hover:text-[#231F1D]"
+                }`}
+              >
+                ES
               </button>
             </div>
           </div>
@@ -347,17 +357,18 @@ export default function NutriLabelToolFirstPage() {
             </div>
           </>
         ) : (
-          <WineELabelStudio />
+          <WineELabelStudio lang={lang} />
         )}
       </main>
 
-      <Footer />
+      <Footer lang={lang} />
 
       <TechnicalSheetModal
         isOpen={isAuditSheetOpen}
         onClose={() => setIsAuditSheetOpen(false)}
         calculation={calculation}
         productName={productName || (isEn ? "My Food Product" : "Mi Producto")}
+        lang={lang}
       />
     </div>
   );

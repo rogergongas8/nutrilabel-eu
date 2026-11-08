@@ -40,6 +40,7 @@ export interface WineCalculationResult {
   ingredientsListEs: string;
   ingredientsListEn: string;
   allergensEs: string[];
+  allergensEn: string[];
   eLabelUrl: string;
   localELabelPath: string;
 }
@@ -71,9 +72,19 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
   const energyKcal = Math.round(energyKcalRaw);
 
   const allergensEs: string[] = [];
-  if (input.containsSulfites) allergensEs.push("Sulfitos (Dióxido de azufre)");
-  if (input.containsEggAlbumin) allergensEs.push("Huevo (albúmina de clarificación)");
-  if (input.containsMilkCasein) allergensEs.push("Leche (caseína de clarificación)");
+  const allergensEn: string[] = [];
+  if (input.containsSulfites) {
+    allergensEs.push("Sulfitos (Dióxido de azufre)");
+    allergensEn.push("Sulphites (Sulphur dioxide)");
+  }
+  if (input.containsEggAlbumin) {
+    allergensEs.push("Huevo (albúmina de clarificación)");
+    allergensEn.push("Egg (fining albumin)");
+  }
+  if (input.containsMilkCasein) {
+    allergensEs.push("Leche (caseína de clarificación)");
+    allergensEn.push("Milk (fining casein)");
+  }
 
   const carbsRounded = Math.round(carbsPer100ml * 10) / 10;
   const sugarsRounded = Math.round(sugarsPer100ml * 10) / 10;
@@ -139,6 +150,7 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
     ingredientsListEs,
     ingredientsListEn,
     allergensEs,
+    allergensEn,
     eLabelUrl,
     localELabelPath,
   };
