@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ShieldCheck, Globe, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Globe, ArrowLeft, QrCode } from "lucide-react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
+import { generateQRMatrix } from "@/lib/qr-encoder";
 
 type Lang = "es" | "en" | "fr" | "de" | "it";
 
@@ -12,6 +13,8 @@ const TRANSLATIONS: Record<
   Lang,
   {
     badge: string;
+    bottleQrTitle: string;
+    scanNotice: string;
     nutritionTitle: string;
     avgValues: string;
     per100ml: string;
@@ -28,10 +31,13 @@ const TRANSLATIONS: Record<
     milk: string;
     atmosphere: string;
     cookieFreeNotice: string;
+    backLink: string;
   }
 > = {
   es: {
     badge: "E-LABEL OFICIAL REGLAMENTO (UE) 2021/2117",
+    bottleQrTitle: "Código QR para etiqueta de botella",
+    scanNotice: "Escanea con la cámara de tu móvil para verificar",
     nutritionTitle: "INFORMACIÓN NUTRICIONAL",
     avgValues: "Valores medios",
     per100ml: "Por 100 ml",
@@ -50,9 +56,12 @@ const TRANSLATIONS: Record<
     atmosphere: "Envasado en atmósfera protectora.",
     cookieFreeNotice:
       "Página exenta de cookies de rastreo, analítica comercial y fines publicitarios en cumplimiento estricto del Artículo 119 del Reglamento (UE) Nº 1308/2013.",
+    backLink: "Volver a NutriLabel Studio",
   },
   en: {
     badge: "OFFICIAL EU E-LABEL REGULATION (EU) 2021/2117",
+    bottleQrTitle: "Wine bottle physical QR code",
+    scanNotice: "Scan with your phone camera to test live resolution",
     nutritionTitle: "NUTRITION DECLARATION",
     avgValues: "Average values",
     per100ml: "Per 100 ml",
@@ -71,9 +80,12 @@ const TRANSLATIONS: Record<
     atmosphere: "Bottled in a protective atmosphere.",
     cookieFreeNotice:
       "Zero tracking cookies, zero user profiling, and zero marketing scripts in strict compliance with Article 119 of Regulation (EU) No 1308/2013.",
+    backLink: "Back to NutriLabel Studio",
   },
   fr: {
     badge: "E-LABEL OFFICIEL RÈGLEMENT (UE) 2021/2117",
+    bottleQrTitle: "Code QR imprimé sur la bouteille",
+    scanNotice: "Scannez avec votre téléphone pour tester",
     nutritionTitle: "DÉCLARATION NUTRITIONNELLE",
     avgValues: "Valeurs moyennes",
     per100ml: "Pour 100 ml",
@@ -92,9 +104,12 @@ const TRANSLATIONS: Record<
     atmosphere: "Conditionné sous atmosphère protectrice.",
     cookieFreeNotice:
       "Page sans cookies de suivi ni scripts publicitaires conformément à l'article 119 du règlement (UE) n° 1308/2013.",
+    backLink: "Retour à NutriLabel Studio",
   },
   de: {
     badge: "OFFIZIELLES EU E-LABEL VERORDNUNG (EU) 2021/2117",
+    bottleQrTitle: "Flaschen-QR-Code",
+    scanNotice: "Mit der Handykamera scannen zum Testen",
     nutritionTitle: "NÄHRWERTDEKLARATION",
     avgValues: "Durchschnittliche Nährwerte",
     per100ml: "Je 100 ml",
@@ -113,9 +128,12 @@ const TRANSLATIONS: Record<
     atmosphere: "Unter Schutzatmosphäre abgefüllt.",
     cookieFreeNotice:
       "Tracking-freie Seite ohne Cookies und Marketing-Skripte gemäß Artikel 119 der Verordnung (EU) Nr. 1308/2013.",
+    backLink: "Zurück zu NutriLabel Studio",
   },
   it: {
     badge: "E-LABEL UFFICIALE REGOLAMENTO (UE) 2021/2117",
+    bottleQrTitle: "Codice QR per bottiglia",
+    scanNotice: "Inquadra con la fotocamera del cellulare",
     nutritionTitle: "DICHIARAZIONE NUTRIZIONALE",
     avgValues: "Valori medi",
     per100ml: "Per 100 ml",
@@ -134,12 +152,21 @@ const TRANSLATIONS: Record<
     atmosphere: "Imbottigliato in atmosfera protettiva.",
     cookieFreeNotice:
       "Pagina priva di cookie di tracciamento o script pubblicitari ai sensi dell'articolo 119 del regolamento (UE) n. 1308/2013.",
+    backLink: "Torna a NutriLabel Studio",
   },
 };
 
 function ELabelViewerContent() {
   const searchParams = useSearchParams();
-  const [lang, setLang] = useState<Lang>("es");
+
+  // Read initial language from query param or default strictly to "en"
+  const urlLang = searchParams.get("lang");
+  const initialLang: Lang =
+    urlLang === "es" || urlLang === "fr" || urlLang === "de" || urlLang === "it"
+      ? (urlLang as Lang)
+      : "en";
+
+  const [lang, setLang] = useState<Lang>(initialLang);
 
   const name = searchParams.get("name") || "Viña Pedrosa Reserva";
   const year = searchParams.get("year") || "2024";
@@ -156,15 +183,23 @@ function ELabelViewerContent() {
 
   const t = TRANSLATIONS[lang];
 
+  // Construct current canonical URL for the QR code
+  const currentUrl =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://nutrilabel-eu.vercel.app/elabel?${searchParams.toString()}`;
+
+  const qrMatrix = useMemo(() => generateQRMatrix(currentUrl), [currentUrl]);
+
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-neutral-900 py-10 px-4 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-[#FAFAFA] text-neutral-900 py-10 px-4 flex flex-col items-center justify-center font-sans">
       <div className="max-w-md w-full space-y-4">
         {/* Top Header with Brand Logo */}
         <div className="flex items-center justify-between px-1">
           <Link href="/" className="hover:opacity-85 transition-opacity">
             <BrandLogo size="sm" />
           </Link>
-          <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
             0% Cookies
           </span>
         </div>
@@ -178,7 +213,7 @@ function ELabelViewerContent() {
               <span>EU 24 Languages</span>
             </div>
             <div className="flex rounded-lg bg-neutral-100 p-0.5 text-[11px] font-medium">
-              {(["es", "en", "fr", "de", "it"] as Lang[]).map((l) => (
+              {(["en", "es", "fr", "de", "it"] as Lang[]).map((l) => (
                 <button
                   key={l}
                   type="button"
@@ -205,6 +240,49 @@ function ELabelViewerContent() {
             </h1>
             <p className="text-xs text-neutral-500 mt-0.5">
               {appellation} · {abv}% vol · 750 ml
+            </p>
+          </div>
+
+          {/* Prominent Scannable Bottle QR Code */}
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/80 flex flex-col items-center justify-center text-center">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800 mb-2">
+              <QrCode className="w-3.5 h-3.5" />
+              <span>{t.bottleQrTitle}</span>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-neutral-200/80 shadow-2xs">
+              <svg
+                viewBox={`0 0 ${qrMatrix.size + 4} ${qrMatrix.size + 4}`}
+                className="w-36 h-36"
+                shapeRendering="crispEdges"
+              >
+                <rect
+                  width={qrMatrix.size + 4}
+                  height={qrMatrix.size + 4}
+                  fill="#FFFFFF"
+                />
+                {qrMatrix.modules.map((row, r) =>
+                  row.map((cell, c) =>
+                    cell ? (
+                      <rect
+                        key={`${r}-${c}`}
+                        x={c + 2}
+                        y={r + 2}
+                        width={1}
+                        height={1}
+                        fill="#171717"
+                      />
+                    ) : null
+                  )
+                )}
+              </svg>
+            </div>
+
+            <p className="mt-2 text-[11px] text-neutral-500">
+              {t.scanNotice}
+            </p>
+            <p className="mt-1 font-mono text-xs font-bold text-neutral-900">
+              E = {kj} kJ / {kcal} kcal (100 ml)
             </p>
           </div>
 
@@ -279,10 +357,10 @@ function ELabelViewerContent() {
           <div className="pt-1 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-800"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Volver a NutriLabel Studio</span>
+              <span>{t.backLink}</span>
             </Link>
           </div>
         </div>
@@ -296,7 +374,7 @@ export default function WineELabelPublicPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs text-neutral-500">
-          Cargando E-Label Oficial UE 2021/2117...
+          Loading Official EU 2021/2117 Wine E-Label...
         </div>
       }
     >

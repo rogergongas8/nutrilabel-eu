@@ -45,7 +45,10 @@ export interface WineCalculationResult {
   localELabelPath: string;
 }
 
-export function calculateWineNutrition(input: WineInput): WineCalculationResult {
+export function calculateWineNutrition(
+  input: WineInput,
+  lang: "es" | "en" = "en"
+): WineCalculationResult {
   // 1. Alcohol en gramos por 100 ml = % vol * 0.7894
   const alcoholGrams = Math.max(0, input.abvPercent * 0.7894);
 
@@ -90,6 +93,7 @@ export function calculateWineNutrition(input: WineInput): WineCalculationResult 
   const sugarsRounded = Math.round(sugarsPer100ml * 10) / 10;
 
   const params = new URLSearchParams({
+    lang,
     name: input.wineName,
     year: input.vintageYear,
     do: input.appellation,

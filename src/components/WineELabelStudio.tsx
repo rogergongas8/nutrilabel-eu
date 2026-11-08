@@ -32,7 +32,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
     setPreviewLang(lang);
   }, [lang]);
 
-  const result = useMemo(() => calculateWineNutrition(wine), [wine]);
+  const result = useMemo(() => calculateWineNutrition(wine, lang), [wine, lang]);
   const qrMatrix = useMemo(
     () => generateQRMatrix(result.eLabelUrl),
     [result.eLabelUrl]
@@ -277,11 +277,18 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
       {/* Right 5 Cols */}
       <div className="lg:col-span-5">
         <div className="bg-white rounded-2xl border border-neutral-200/90 shadow-2xs p-6 space-y-5">
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-xl bg-neutral-50 border border-neutral-200/80">
-            <div className="bg-white p-2.5 rounded-xl border border-neutral-200 shrink-0">
+          {/* Prominent QR Code Section */}
+          <div className="p-5 rounded-xl bg-neutral-50 border border-neutral-200/80 flex flex-col items-center justify-center text-center">
+            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full mb-3">
+              {isEn
+                ? "Regulation (EU) 2021/2117 · Bottle QR"
+                : "Reglamento (UE) 2021/2117 · QR para Botella"}
+            </span>
+
+            <div className="bg-white p-3.5 rounded-2xl border border-neutral-200/80 shadow-2xs">
               <svg
                 viewBox={`0 0 ${qrMatrix.size + 4} ${qrMatrix.size + 4}`}
-                className="w-24 h-24"
+                className="w-40 h-40"
                 shapeRendering="crispEdges"
               >
                 <rect
@@ -306,10 +313,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
               </svg>
             </div>
 
-            <div className="space-y-1 text-center sm:text-left">
-              <span className="text-[11px] font-medium text-neutral-500">
-                {isEn ? "Print on bottle" : "Impresión en botella"}
-              </span>
+            <div className="mt-3 space-y-1">
               <p className="text-sm font-bold text-neutral-900">
                 {result.bottleSymbolText}
               </p>
@@ -317,10 +321,10 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
                 {isEn
                   ? result.allergensEn.length > 0
                     ? `Contains: ${result.allergensEn.join(", ")}`
-                    : "Allergen-free"
+                    : "No declarable allergens"
                   : result.allergensEs.length > 0
                   ? `Contiene: ${result.allergensEs.join(", ")}`
-                  : "Exento de alérgenos"}
+                  : "Sin alérgenos declarables"}
               </p>
             </div>
           </div>
@@ -330,7 +334,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-neutral-600 flex items-center gap-1.5">
                 <Smartphone className="w-3.5 h-3.5 text-neutral-500" />
-                {isEn ? "Mobile QR view" : "Vista en el móvil"}
+                {isEn ? "Mobile landing page view" : "Vista en el móvil al escanear"}
               </span>
               <div className="flex rounded-lg bg-neutral-100 p-0.5 text-[11px] font-medium">
                 <button
@@ -338,7 +342,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
                   onClick={() => setPreviewLang("en")}
                   className={`px-2 py-0.5 rounded-md cursor-pointer ${
                     previewLang === "en"
-                      ? "bg-white text-neutral-900 shadow-2xs"
+                      ? "bg-white text-emerald-700 font-semibold shadow-2xs"
                       : "text-neutral-500"
                   }`}
                 >
@@ -349,7 +353,7 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
                   onClick={() => setPreviewLang("es")}
                   className={`px-2 py-0.5 rounded-md cursor-pointer ${
                     previewLang === "es"
-                      ? "bg-white text-neutral-900 shadow-2xs"
+                      ? "bg-white text-emerald-700 font-semibold shadow-2xs"
                       : "text-neutral-500"
                   }`}
                 >
@@ -405,8 +409,8 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en" }> = ({
               rel="noopener noreferrer"
               className="h-10 px-4 rounded-xl bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 text-xs font-medium flex items-center justify-center gap-2 transition-all"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>{isEn ? "Open QR Page" : "Abrir página QR"}</span>
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{isEn ? "Open Mobile Page" : "Abrir Ficha Móvil"}</span>
             </a>
           </div>
         </div>
