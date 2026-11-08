@@ -3,7 +3,8 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 /** Price of one hosted e-label for one year, in euro cents. PLACEHOLDER: decide before launch. */
 export const ELABEL_PRICE_CENTS = Number(process.env.ELABEL_PRICE_CENTS ?? 2900);
-export const ELABEL_YEARS = 1;
+/** Payments are off until NEXT_PUBLIC_PAYMENTS_ENABLED=1 (the waitlist is shown instead). */
+export const paymentsEnabled = () => process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "1";
 
 export const stripeConfigured = () => Boolean(process.env.STRIPE_SECRET_KEY);
 
@@ -22,7 +23,7 @@ export async function createCheckoutSession(opts: {
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": "eur",
     "line_items[0][price_data][unit_amount]": String(ELABEL_PRICE_CENTS),
-    "line_items[0][price_data][product_data][name]": `E-label hospedada (1 año): ${opts.wineName}`,
+    "line_items[0][price_data][product_data][name]": `E-label alojada (pago único): ${opts.wineName}`,
   });
   if (opts.email) body.set("customer_email", opts.email);
 
@@ -64,8 +65,3 @@ export function verifyStripeSignature(rawBody: string, header: string | null, se
   });
 }
 
-export function paidUntilFromNow(): string {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() + ELABEL_YEARS);
-  return d.toISOString();
-}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const siteUrl =
@@ -133,7 +134,8 @@ export default function RootLayout({
       </head>
       <body className="antialiased selection:bg-[#D94E28] selection:text-white">
         {children}
-      </body>
+      <Analytics />
+        </body>
     </html>
   );
 }

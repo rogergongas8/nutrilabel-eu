@@ -13,3 +13,13 @@ create table if not exists public.elabels (
 -- Only the server (service role key) touches this table. No public policies on purpose:
 -- with RLS on and no policies, the anon key can read/write nothing.
 alter table public.elabels enable row level security;
+
+create table if not exists public.waitlist (
+  id         bigint generated always as identity primary key,
+  email      text not null unique,
+  preference text not null check (preference in ('one_time','annual','unsure')),
+  lang       text,
+  source     text,
+  created_at timestamptz not null default now()
+);
+alter table public.waitlist enable row level security;

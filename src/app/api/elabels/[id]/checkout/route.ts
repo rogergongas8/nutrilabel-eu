@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { paymentsEnabled } from "@/lib/stripe";
 import { getStore, tokenMatches } from "@/lib/elabel-store";
 import { createCheckoutSession, stripeConfigured } from "@/lib/stripe";
 import { siteOrigin } from "@/lib/site";
@@ -6,6 +7,9 @@ import { siteOrigin } from "@/lib/site";
 export const runtime = "nodejs";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!paymentsEnabled() && process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not open yet" }, { status: 503 });
+  }
   const { id } = await params;
   const { editToken } = (await req.json().catch(() => ({}))) as { editToken?: string };
 

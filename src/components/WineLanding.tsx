@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
+import { WaitlistForm } from "@/components/WaitlistForm";
 import { Check, QrCode, FlaskConical, Languages, PencilLine } from "lucide-react";
 
 type L = "en" | "es";
@@ -16,7 +17,7 @@ const COPY = {
     steps: [
       ["Enter your values", "Alcohol, residual sugar, acidity and glycerol. The energy per 100 ml (E = kJ / kcal) is calculated for you with the coefficients of Annex XIV of Regulation 1169/2011."],
       ["Preview the page", "See the exact page your customers will open when they scan the bottle, with allergens highlighted."],
-      ["Publish once", "Pay once for the year, get a permanent address and the QR in print-ready vector format."],
+      ["Publish once", "Pay once per label, get a permanent address and the QR in print-ready vector format."],
     ],
     featTitle: "What you get",
     feats: [
@@ -26,16 +27,16 @@ const COPY = {
       [PencilLine, "Edit any time", "A private link lets you correct a value for a new vintage or a corrected analysis."],
     ],
     priceTitle: "Simple pricing",
-    priceLine: (p: string) => `${p} per label, per year`,
-    priceNotes: ["One payment, no automatic renewal", "12 months of hosting included", "No cookies, no tracking on the public page"],
+    priceLine: (p: string) => `${p} one-time, per label`,
+    priceNotes: ["Planned price. One payment per label, no renewals", "Online for at least 5 years, with a data export", "No cookies, no tracking on the public page"],
     faqTitle: "Questions",
     faq: [
       ["What does the regulation require?", "Since December 2023, wines produced from that date must give the ingredient list and nutrition declaration electronically, usually through a QR code, while some information (such as allergens and the energy value) must still appear on the physical label. Check the regulation or your regional authority for your exact case."],
       ["Does it work in any EU country?", "The page and the energy calculation follow the EU regulation and are not tied to one country. The page is available in 5 languages."],
       ["Who is responsible for the values?", "You are. We calculate from the values you enter. Make sure they come from your own analysis. This tool is not legal advice."],
-      ["What happens after the first year?", "Your page stays tied to your address for the paid period. Please check the terms before printing large runs."],
+      ["How long does my page stay online?", "Our commitment is at least 5 years from the day you publish, plus an export of your data. The full terms will be published before launch."],
     ],
-    final: "Start with the free calculator. You only pay if you want the permanent page.",
+    final: "Start with the free calculator. Hosted e-labels open soon.",
     disclaimer: "NutriLabel helps you calculate and publish. It is not legal advice and not an official or government service.",
   },
   es: {
@@ -49,7 +50,7 @@ const COPY = {
     steps: [
       ["Introduce tus valores", "Alcohol, azúcar residual, acidez y glicerol. La energía por 100 ml (E = kJ / kcal) se calcula con los coeficientes del Anexo XIV del Reglamento 1169/2011."],
       ["Mira la ficha", "Ves exactamente la página que abrirán tus clientes al escanear la botella, con los alérgenos resaltados."],
-      ["Publica una vez", "Pagas una vez al año, recibes una dirección permanente y el QR en vector listo para imprenta."],
+      ["Publica una vez", "Pagas una vez por etiqueta, recibes una dirección permanente y el QR en vector listo para imprenta."],
     ],
     featTitle: "Qué incluye",
     feats: [
@@ -59,16 +60,16 @@ const COPY = {
       [PencilLine, "Edita cuando quieras", "Un enlace privado te permite corregir un valor para una nueva añada o una analítica corregida."],
     ],
     priceTitle: "Precio sencillo",
-    priceLine: (p: string) => `${p} por etiqueta y año`,
-    priceNotes: ["Un solo pago, sin renovación automática", "12 meses de alojamiento incluidos", "Sin cookies ni seguimiento en la página pública"],
+    priceLine: (p: string) => `${p} pago único, por etiqueta`,
+    priceNotes: ["Precio previsto. Un pago por etiqueta, sin renovaciones", "En línea al menos 5 años, con exportación de tus datos", "Sin cookies ni seguimiento en la página pública"],
     faqTitle: "Preguntas",
     faq: [
       ["¿Qué exige la normativa?", "Desde diciembre de 2023, los vinos elaborados a partir de esa fecha deben ofrecer por medios electrónicos la lista de ingredientes y la declaración nutricional, normalmente mediante un QR, mientras que parte de la información (como los alérgenos y el valor energético) debe seguir en la etiqueta física. Consulta el reglamento o a tu autoridad regional para tu caso concreto."],
       ["¿Sirve para cualquier país de la UE?", "La ficha y el cálculo energético siguen el reglamento europeo y no dependen de un país. La página está disponible en 5 idiomas."],
       ["¿Quién responde de los valores?", "Tú. Calculamos con los valores que introduces; asegúrate de que salgan de tu propia analítica. Esta herramienta no es asesoramiento legal."],
-      ["¿Qué pasa pasado el primer año?", "Tu página queda asociada a tu dirección durante el periodo pagado. Revisa las condiciones antes de imprimir tiradas grandes."],
+      ["¿Cuánto tiempo estará en línea mi página?", "Nuestro compromiso es de al menos 5 años desde que la publicas, más una exportación de tus datos. Las condiciones completas se publicarán antes del lanzamiento."],
     ],
-    final: "Empieza con la calculadora gratuita. Solo pagas si quieres la página permanente.",
+    final: "Empieza con la calculadora gratuita. Las e-labels alojadas abren pronto.",
     disclaimer: "NutriLabel te ayuda a calcular y publicar. No es asesoramiento legal ni un servicio oficial o gubernamental.",
   },
 } as const;
@@ -147,7 +148,13 @@ export function WineLanding({ lang }: { lang: L }) {
                 <li key={n} className="flex gap-2"><Check className="w-4 h-4 mt-0.5 text-emerald-600 shrink-0" />{n}</li>
               ))}
             </ul>
-            <Link href={tool} className="mt-6 h-11 w-full rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-semibold inline-flex items-center justify-center transition-colors">{t.cta}</Link>
+            <div className="mt-6">
+              {process.env.NEXT_PUBLIC_CONTACT_EMAIL ? (
+                <WaitlistForm lang={lang} source="landing" />
+              ) : (
+                <Link href={tool} className="h-11 w-full rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-semibold inline-flex items-center justify-center transition-colors">{t.cta}</Link>
+              )}
+            </div>
           </div>
         </section>
 

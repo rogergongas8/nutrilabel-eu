@@ -4,6 +4,9 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Wine, Download, Smartphone, ExternalLink } from "lucide-react";
 import { calculateWineNutrition, WineInput } from "@/lib/wine-calculator";
 import { generateQRMatrix } from "@/lib/qr-encoder";
+import { WaitlistForm } from "@/components/WaitlistForm";
+
+const PAYMENTS_ENABLED = process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "1";
 
 export interface WineEditContext {
   id: string;
@@ -506,6 +509,8 @@ export const WineELabelStudio: React.FC<{ lang?: "es" | "en"; edit?: WineEditCon
                 </p>
               )}
             </div>
+          ) : !PAYMENTS_ENABLED ? (
+            <WaitlistForm lang={lang} source="studio" />
           ) : (
             <>
           {/* Hosted, permanent e-label (paid) */}

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getStore, tokenMatches } from "@/lib/elabel-store";
-import { paidUntilFromNow } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
@@ -15,6 +14,6 @@ export async function GET(req: Request) {
   const label = await store.get(id);
   if (!label || !tokenMatches(t, label.editTokenHash)) return new NextResponse("Not found", { status: 404 });
 
-  await store.activate(id, paidUntilFromNow(), "dev");
+  await store.activate(id, null, "dev");
   return NextResponse.redirect(`${url.origin}/e/${id}/done?t=${t}`);
 }

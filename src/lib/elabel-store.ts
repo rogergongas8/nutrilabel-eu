@@ -22,7 +22,7 @@ export interface StoredELabel {
   email: string | null;
   wine: WineInput;
   createdAt: string;
-  /** ISO date until which the hosted page stays online. */
+  /** Reserved for a future expiry policy. Null = paid once, no expiry. */
   paidUntil: string | null;
   stripeSessionId: string | null;
 }
@@ -30,7 +30,7 @@ export interface StoredELabel {
 export interface ELabelStore {
   insert(label: StoredELabel): Promise<void>;
   get(id: string): Promise<StoredELabel | null>;
-  activate(id: string, paidUntil: string, stripeSessionId: string): Promise<boolean>;
+  activate(id: string, paidUntil: string | null, stripeSessionId: string): Promise<boolean>;
   updateWine(id: string, wine: WineInput): Promise<boolean>;
 }
 

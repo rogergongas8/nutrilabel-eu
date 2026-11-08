@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { paymentsEnabled } from "@/lib/stripe";
 import { getStore, hashToken, newEditToken, newId } from "@/lib/elabel-store";
 import { parseEmail, parseWineInput } from "@/lib/elabel-validate";
 
@@ -6,6 +7,9 @@ export const runtime = "nodejs";
 
 /** Creates a pending (unpaid, not public) e-label. Returns its id and the secret edit token (shown once). */
 export async function POST(req: Request) {
+  if (!paymentsEnabled() && process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not open yet" }, { status: 503 });
+  }
   let body: unknown;
   try {
     body = await req.json();
