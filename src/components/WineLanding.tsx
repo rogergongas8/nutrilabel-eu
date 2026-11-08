@@ -9,32 +9,32 @@ const COPY = {
   en: {
     nav: "Free calculator",
     badge: "Regulation (EU) 2021/2117",
-    h1: "Wine e-label with a QR that never changes",
-    sub: "Enter your lab values, get the energy per 100 ml, and publish the ingredient and nutrition page your bottles must link to, in 5 languages, at one permanent address.",
+    h1: "Free wine e-label and QR generator (EU 2021/2117)",
+    sub: "Enter your lab values, get the energy per 100 ml and a ready-to-print QR for the ingredient and nutrition page your bottles must link to, in 5 languages.",
     cta: "Try it free",
     cta2: "See how it works",
     stepsTitle: "From lab sheet to QR in minutes",
     steps: [
       ["Enter your values", "Alcohol, residual sugar, acidity and glycerol. The energy per 100 ml (E = kJ / kcal) is calculated for you with the coefficients of Annex XIV of Regulation 1169/2011."],
       ["Preview the page", "See the exact page your customers will open when they scan the bottle, with allergens highlighted."],
-      ["Publish once", "Pay once per label, get a permanent address and the QR in print-ready vector format."],
+      ["Download your QR", "Get the QR in print-ready vector format. Hosted pages with a permanent address and editing are coming."],
     ],
     featTitle: "What you get",
     feats: [
-      [QrCode, "A permanent address", "The QR you print points to a fixed URL. You can edit the content later without changing the QR."],
+      [QrCode, "Permanent address (coming soon)", "Hosted pages with a fixed URL, so the QR you print never has to change."],
       [Languages, "5 languages", "English, Spanish, French, German and Italian, with the visitor's language detected automatically."],
       [FlaskConical, "Energy calculation", "Computed from your values, never typed by hand. Recalculated on our server every time the page loads."],
-      [PencilLine, "Edit any time", "A private link lets you correct a value for a new vintage or a corrected analysis."],
+      [PencilLine, "Edit any time (coming soon)", "A private link to correct a value for a new vintage or a corrected analysis."],
     ],
-    priceTitle: "Simple pricing",
-    priceLine: (p: string) => `${p} one-time, per label`,
-    priceNotes: ["Planned price. One payment per label, no renewals", "Online for at least 5 years, with a data export", "No cookies, no tracking on the public page"],
+    priceTitle: "Free for now",
+    priceLine: "Calculator, preview and QR: free",
+    priceNotes: ["No sign-up needed", "Hosted e-labels are being prepared", "Pricing is not decided yet: tell us what you would prefer"],
     faqTitle: "Questions",
     faq: [
       ["What does the regulation require?", "Since December 2023, wines produced from that date must give the ingredient list and nutrition declaration electronically, usually through a QR code, while some information (such as allergens and the energy value) must still appear on the physical label. Check the regulation or your regional authority for your exact case."],
       ["Does it work in any EU country?", "The page and the energy calculation follow the EU regulation and are not tied to one country. The page is available in 5 languages."],
       ["Who is responsible for the values?", "You are. We calculate from the values you enter. Make sure they come from your own analysis. This tool is not legal advice."],
-      ["How long does my page stay online?", "Our commitment is at least 5 years from the day you publish, plus an export of your data. The full terms will be published before launch."],
+      ["Is it free?", "Yes. The calculator, preview and QR download are free today. We are preparing hosted e-labels with a permanent address; pricing is not decided yet."],
     ],
     final: "Start with the free calculator. Hosted e-labels open soon.",
     disclaimer: "NutriLabel helps you calculate and publish. It is not legal advice and not an official or government service.",
@@ -42,46 +42,37 @@ const COPY = {
   es: {
     nav: "Calculadora gratis",
     badge: "Reglamento (UE) 2021/2117",
-    h1: "E-label de vino con un QR que no cambia nunca",
-    sub: "Introduce tus valores de laboratorio, obtén la energía por 100 ml y publica la ficha de ingredientes e información nutricional a la que deben enlazar tus botellas, en 5 idiomas y en una dirección permanente.",
+    h1: "Generador gratuito de e-label y QR para vino (UE 2021/2117)",
+    sub: "Introduce tus valores de laboratorio y obtén la energía por 100 ml y un QR listo para imprimir hacia la ficha de ingredientes e información nutricional que deben enlazar tus botellas, en 5 idiomas.",
     cta: "Pruébalo gratis",
     cta2: "Ver cómo funciona",
     stepsTitle: "De la analítica al QR en minutos",
     steps: [
       ["Introduce tus valores", "Alcohol, azúcar residual, acidez y glicerol. La energía por 100 ml (E = kJ / kcal) se calcula con los coeficientes del Anexo XIV del Reglamento 1169/2011."],
       ["Mira la ficha", "Ves exactamente la página que abrirán tus clientes al escanear la botella, con los alérgenos resaltados."],
-      ["Publica una vez", "Pagas una vez por etiqueta, recibes una dirección permanente y el QR en vector listo para imprenta."],
+      ["Descarga tu QR", "Obtén el QR en vector listo para imprenta. Las fichas alojadas con dirección permanente y edición llegarán pronto."],
     ],
     featTitle: "Qué incluye",
     feats: [
-      [QrCode, "Una dirección permanente", "El QR que imprimes apunta a una URL fija. Puedes editar el contenido después sin cambiar el QR."],
+      [QrCode, "Dirección permanente (próximamente)", "Fichas alojadas con URL fija, para que el QR que imprimes no tenga que cambiar nunca."],
       [Languages, "5 idiomas", "Inglés, español, francés, alemán e italiano, con detección automática del idioma del visitante."],
       [FlaskConical, "Cálculo de energía", "Se calcula a partir de tus valores, nunca a mano. Se recalcula en nuestro servidor cada vez que se carga la página."],
-      [PencilLine, "Edita cuando quieras", "Un enlace privado te permite corregir un valor para una nueva añada o una analítica corregida."],
+      [PencilLine, "Edita cuando quieras (próximamente)", "Un enlace privado para corregir un valor en una nueva añada o con una analítica corregida."],
     ],
-    priceTitle: "Precio sencillo",
-    priceLine: (p: string) => `${p} pago único, por etiqueta`,
-    priceNotes: ["Precio previsto. Un pago por etiqueta, sin renovaciones", "En línea al menos 5 años, con exportación de tus datos", "Sin cookies ni seguimiento en la página pública"],
+    priceTitle: "Gratis por ahora",
+    priceLine: "Calculadora, vista previa y QR: gratis",
+    priceNotes: ["Sin registro", "Estamos preparando las e-labels alojadas", "El precio aún no está decidido: dinos qué preferirías"],
     faqTitle: "Preguntas",
     faq: [
       ["¿Qué exige la normativa?", "Desde diciembre de 2023, los vinos elaborados a partir de esa fecha deben ofrecer por medios electrónicos la lista de ingredientes y la declaración nutricional, normalmente mediante un QR, mientras que parte de la información (como los alérgenos y el valor energético) debe seguir en la etiqueta física. Consulta el reglamento o a tu autoridad regional para tu caso concreto."],
       ["¿Sirve para cualquier país de la UE?", "La ficha y el cálculo energético siguen el reglamento europeo y no dependen de un país. La página está disponible en 5 idiomas."],
       ["¿Quién responde de los valores?", "Tú. Calculamos con los valores que introduces; asegúrate de que salgan de tu propia analítica. Esta herramienta no es asesoramiento legal."],
-      ["¿Cuánto tiempo estará en línea mi página?", "Nuestro compromiso es de al menos 5 años desde que la publicas, más una exportación de tus datos. Las condiciones completas se publicarán antes del lanzamiento."],
+      ["¿Es gratis?", "Sí. La calculadora, la vista previa y la descarga del QR son gratuitas hoy. Estamos preparando e-labels alojadas con dirección permanente; el precio aún no está decidido."],
     ],
     final: "Empieza con la calculadora gratuita. Las e-labels alojadas abren pronto.",
     disclaimer: "NutriLabel te ayuda a calcular y publicar. No es asesoramiento legal ni un servicio oficial o gubernamental.",
   },
 } as const;
-
-function formatPrice(lang: L): string {
-  const cents = Number(process.env.ELABEL_PRICE_CENTS ?? 2900);
-  return new Intl.NumberFormat(lang === "es" ? "es-ES" : "en-IE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
-  }).format(cents / 100);
-}
 
 export function WineLanding({ lang }: { lang: L }) {
   const t = COPY[lang];
@@ -142,7 +133,7 @@ export function WineLanding({ lang }: { lang: L }) {
         <section className="py-12 border-t border-neutral-200/80">
           <div className="max-w-md bg-white rounded-2xl border border-neutral-200/90 p-8">
             <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">{t.priceTitle}</h2>
-            <p className="mt-3 text-3xl font-bold">{t.priceLine(formatPrice(lang))}</p>
+            <p className="mt-3 text-3xl font-bold">{t.priceLine}</p>
             <ul className="mt-5 space-y-2 text-sm text-neutral-700">
               {t.priceNotes.map((n) => (
                 <li key={n} className="flex gap-2"><Check className="w-4 h-4 mt-0.5 text-emerald-600 shrink-0" />{n}</li>

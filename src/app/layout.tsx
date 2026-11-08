@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsGate } from "@/components/AnalyticsGate";
 import "./globals.css";
 
 const siteUrl =
@@ -134,7 +134,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased selection:bg-[#D94E28] selection:text-white">
         {children}
-      <Analytics />
+      <AnalyticsGate />
         </body>
     </html>
   );
